@@ -14,7 +14,7 @@ export default function DashboardLayout({
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
   return (
-    <div className="flex min-h-screen bg-background text-foreground">
+    <div className="flex min-h-screen bg-background text-foreground w-full overflow-x-hidden">
       {/* 1. Desktop Persistent Sidebar */}
       <div className="hidden lg:flex lg:w-72 lg:flex-col lg:fixed lg:inset-y-0 z-40">
         <AppSidebar />
@@ -40,9 +40,9 @@ export default function DashboardLayout({
       </div>
 
       {/* 3. Main Content Column */}
-      <div className="flex flex-1 flex-col lg:pl-72 min-w-0">
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 pt-16 lg:pt-8">
-          <div className="mx-auto max-w-7xl">{children}</div>
+      <div className="flex flex-1 flex-col lg:pl-72 min-w-0 w-full overflow-x-hidden">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden p-3 sm:p-6 lg:p-8 pt-16 lg:pt-8 w-full max-w-full">
+          <div className="mx-auto max-w-7xl w-full min-w-0">{children}</div>
         </main>
       </div>
     </div>

@@ -30,26 +30,34 @@ const chartConfig = {
 
 export function AttendanceChart() {
   return (
-    <ChartContainer config={chartConfig} className="min-h-[260px] w-full">
-      <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-        <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-muted/50" />
-        <XAxis
-          dataKey="day"
-          tickLine={false}
-          tickMargin={10}
-          axisLine={false}
-          className="text-xs fill-muted-foreground font-medium"
-        />
-        <YAxis
-          tickLine={false}
-          axisLine={false}
-          className="text-xs fill-muted-foreground font-medium"
-        />
-        <ChartTooltip content={<ChartTooltipContent />} />
-        <Bar dataKey="present" fill="var(--color-chart-1)" radius={[4, 4, 0, 0]} />
-        <Bar dataKey="absent" fill="var(--color-chart-2)" radius={[4, 4, 0, 0]} />
-      </BarChart>
-    </ChartContainer>
+    <div className="w-full max-w-full min-w-0 overflow-hidden">
+      <ChartContainer
+        config={chartConfig}
+        className="h-[240px] sm:h-[260px] w-full max-w-full min-w-0 aspect-auto"
+      >
+        <BarChart
+          data={chartData}
+          margin={{ top: 10, right: 10, left: -25, bottom: 0 }}
+        >
+          <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-muted/50" />
+          <XAxis
+            dataKey="day"
+            tickLine={false}
+            tickMargin={8}
+            axisLine={false}
+            className="text-[11px] sm:text-xs fill-muted-foreground font-medium"
+          />
+          <YAxis
+            tickLine={false}
+            axisLine={false}
+            className="text-[11px] sm:text-xs fill-muted-foreground font-medium"
+          />
+          <ChartTooltip content={<ChartTooltipContent />} />
+          <Bar dataKey="present" fill="var(--color-chart-1)" radius={[4, 4, 0, 0]} />
+          <Bar dataKey="absent" fill="var(--color-chart-2)" radius={[4, 4, 0, 0]} />
+        </BarChart>
+      </ChartContainer>
+    </div>
   );
 }
 
