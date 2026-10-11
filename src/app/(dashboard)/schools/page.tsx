@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { useQuery, keepPreviousData, useQueryClient } from "@tanstack/react-query";
 import { parseAsString, parseAsStringLiteral } from "nuqs";
 import { format } from "date-fns";
 import {
@@ -40,6 +40,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
+import { SchoolOnboardDialog } from "@/components/form";
 
 // -------------------------------------------------------------
 // 1. Data Type Definition
@@ -535,6 +536,8 @@ function SchoolsTableContent() {
     },
   });
 
+  const queryClient = useQueryClient();
+
   // TanStack Query with placeholderData: keepPreviousData
   const { data, isLoading, isFetching, isPlaceholderData, isError, error } =
     useQuery({
@@ -804,14 +807,11 @@ function SchoolsTableContent() {
         </div>
 
         <div className="flex items-center gap-2">
-          <Button
-            size="sm"
-            onClick={() => toast.success("নতুন বিদ্যালয় যুক্ত করার ফর্ম ওপেন করা হচ্ছে...")}
-            className="h-9 gap-1.5 text-xs font-semibold shadow-xs"
-          >
-            <Plus className="h-4 w-4" />
-            নতুন বিদ্যালয় যুক্ত করুন
-          </Button>
+          <SchoolOnboardDialog
+            onSuccess={() => {
+              queryClient.invalidateQueries({ queryKey: ["schools"] });
+            }}
+          />
         </div>
       </div>
 
