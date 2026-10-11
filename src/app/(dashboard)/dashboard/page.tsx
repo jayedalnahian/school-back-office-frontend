@@ -1,6 +1,7 @@
 import * as React from "react";
 import Link from "next/link";
 import {
+  Building2,
   GraduationCap,
   UserCheck,
   CheckCircle2,
@@ -39,6 +40,16 @@ export default function DashboardPage() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          <Link href="/schools">
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8 gap-1.5 text-xs font-semibold border-primary/30 hover:border-primary/60 hover:bg-primary/5 text-primary"
+            >
+              <Building2 className="h-3.5 w-3.5" />
+              বিদ্যালয় তালিকা (DataTable টেস্ট করুন)
+            </Button>
+          </Link>
           <Badge variant="outline" className="px-2.5 py-1 text-xs font-semibold bg-muted/50 border-border">
             শিক্ষাবর্ষ: ২০২৬
           </Badge>
