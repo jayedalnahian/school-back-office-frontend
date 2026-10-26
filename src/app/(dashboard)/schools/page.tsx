@@ -40,6 +40,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
+import {
+  SchoolOnboardingDialog,
+  type CreatedSchoolResult,
+} from "@/components/schools/school-onboarding-dialog";
+
 
 // -------------------------------------------------------------
 // 1. Data Type Definition
@@ -508,6 +513,8 @@ const schoolFilterConfigs: DataTableFilterConfig[] = [
 // 5. Schools Management Page
 // -------------------------------------------------------------
 function SchoolsTableContent() {
+  const [isOnboardingOpen, setIsOnboardingOpen] = React.useState(false);
+
   // nuqs + use-debounce URL State Management
   const {
     page,
@@ -543,6 +550,26 @@ function SchoolsTableContent() {
       placeholderData: keepPreviousData,
       staleTime: 60 * 1000,
     });
+
+  // Callback when a school is created to update local mock state
+  const handleSchoolCreated = (newSchool: CreatedSchoolResult) => {
+    const newRecord: SchoolRecord = {
+      id: newSchool.id,
+      name: newSchool.name,
+      code: newSchool.gps_code,
+      type: "government",
+      email: newSchool.email || `info@${newSchool.gps_code}.edu.bd`,
+      phone: newSchool.phone || "N/A",
+      address: [newSchool.address, newSchool.upazila, newSchool.district]
+        .filter(Boolean)
+        .join(", "),
+      website: `https://${newSchool.gps_code}.edu.bd`,
+      is_active: newSchool.is_active,
+      total_students: 0,
+      created_at: newSchool.created_at || new Date().toISOString(),
+    };
+    DUMMY_SCHOOLS.unshift(newRecord);
+  };
 
   // Column Definitions
   const columns = React.useMemo<DataTableColumnDef<SchoolRecord>[]>(
@@ -806,7 +833,7 @@ function SchoolsTableContent() {
         <div className="flex items-center gap-2">
           <Button
             size="sm"
-            onClick={() => toast.success("নতুন বিদ্যালয় যুক্ত করার ফর্ম ওপেন করা হচ্ছে...")}
+            onClick={() => setIsOnboardingOpen(true)}
             className="h-9 gap-1.5 text-xs font-semibold shadow-xs"
           >
             <Plus className="h-4 w-4" />
@@ -847,6 +874,13 @@ function SchoolsTableContent() {
         emptyTitle="কোনো বিদ্যালয় পাওয়া যায়নি"
         emptyDescription="আপনার ফিল্টার বা সার্চ কিওয়ার্ডের সাথে মেলে এমন কোনো বিদ্যালয় তথ্য ডাটাবেজে নেই।"
         onRowClick={(row) => toast.info(`নির্বাচিত বিদ্যালয়: ${row.name}`)}
+      />
+
+      {/* School Onboarding Dialog */}
+      <SchoolOnboardingDialog
+        open={isOnboardingOpen}
+        onOpenChange={setIsOnboardingOpen}
+        onSuccess={handleSchoolCreated}
       />
     </div>
   );
