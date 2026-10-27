@@ -76,3 +76,31 @@ export interface OnboardSchoolResponse {
   school: CreatedSchoolResult;
   admin: unknown;
 }
+
+export interface SchoolUpdateFormData {
+  id: string;
+  name: string;
+  gps_code: string;
+  division: string | null;
+  district: string | null;
+  upazila: string | null;
+  cluster: string | null;
+  address: string | null;
+  phone: string | null;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface UpdateSchoolPayload {
+  name?: string;
+  division?: string;
+  district?: string;
+  upazila?: string;
+  cluster?: string;
+  address?: string | null;
+  phone?: string | null;
+  is_active?: boolean;
+}
+
+

@@ -7,6 +7,8 @@ import type {
   CreateSchoolPayload,
   OnboardSchoolPayload,
   OnboardSchoolResponse,
+  SchoolUpdateFormData,
+  UpdateSchoolPayload,
 } from "./schools.types";
 
 /**
@@ -121,3 +123,30 @@ export async function createSchool(
   }
   return response.data;
 }
+
+/**
+ * Service to fetch a single school's details for form inputs / placeholders
+ */
+export async function getSchoolById(id: string): Promise<SchoolUpdateFormData> {
+  const response = await httpClient.get<SchoolUpdateFormData>(`/schools/${id}`);
+  if (!response.data) {
+    throw new Error(response.message || "Failed to retrieve school details");
+  }
+  return response.data;
+}
+
+/**
+ * Service to update an existing school's details (PATCH /schools/:id)
+ */
+export async function updateSchool(
+  id: string,
+  payload: UpdateSchoolPayload
+): Promise<SchoolUpdateFormData> {
+  const response = await httpClient.patch<SchoolUpdateFormData>(`/schools/${id}`, payload);
+  if (!response.data) {
+    throw new Error(response.message || "Failed to update school");
+  }
+  return response.data;
+}
+
+

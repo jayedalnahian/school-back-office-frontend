@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { format } from "date-fns";
 import {
   MoreHorizontal,
@@ -64,6 +65,7 @@ interface GetSchoolColumnsOptions {
   sortOrder?: SortOrder | null;
   onSortChange?: (field: string | null, order: SortOrder | null) => void;
   onDelete: (school: SchoolRecord) => void;
+  onEdit: (school: SchoolRecord) => void;
 }
 
 /**
@@ -74,6 +76,7 @@ export function getSchoolColumns({
   sortOrder,
   onSortChange,
   onDelete,
+  onEdit,
 }: GetSchoolColumnsOptions): DataTableColumnDef<SchoolRecord>[] {
   return [
     {
@@ -254,57 +257,81 @@ export function getSchoolColumns({
       cell: ({ row }) => {
         const school = row.original;
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuLabel className="text-xs">অ্যাকশন</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() => {
-                  navigator.clipboard.writeText(school.id);
-                  toast.success("School ID ক্লিপবোর্ডে কপি হয়েছে");
-                }}
-                className="cursor-pointer text-xs"
-              >
-                <Copy className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
-                কপি আইডি
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => window.open(school.website, "_blank")}
-                className="cursor-pointer text-xs"
-              >
-                <ExternalLink className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
-                ওয়েবসাইট ভিজিট
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => toast.info(`Viewing details of ${school.name}`)}
-                className="cursor-pointer text-xs"
-              >
-                <Eye className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
-                বিস্তারিত দেখুন
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => toast.info(`Editing ${school.name}`)}
-                className="cursor-pointer text-xs"
-              >
-                <Pencil className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
-                তথ্য সম্পাদনা
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => onDelete(school)}
-                className="cursor-pointer text-xs text-destructive focus:text-destructive"
-              >
-                <Trash2 className="mr-2 h-3.5 w-3.5" />
-                মুছে ফেলুন
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex items-center justify-end gap-1">
+            {/* <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 p-0 text-muted-foreground hover:text-primary"
+              title="তথ্য সম্পাদনা"
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(school);
+              }}
+            >
+              <span className="sr-only">তথ্য সম্পাদনা</span>
+              <Pencil className="h-4 w-4" />
+            </Button> */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 p-0"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <span className="sr-only">মেনু খুলুন</span>
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-52">
+                <DropdownMenuLabel className="text-xs">অ্যাকশন</DropdownMenuLabel>
+                <DropdownMenuItem
+                  onClick={() => {
+                    navigator.clipboard.writeText(school.id);
+                    toast.success("School ID ক্লিপবোর্ডে কপি হয়েছে");
+                  }}
+                  className="cursor-pointer text-xs"
+                >
+                  <Copy className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
+                  কপি আইডি
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => window.open(school.website, "_blank")}
+                  className="cursor-pointer text-xs"
+                >
+                  <ExternalLink className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
+                  ওয়েবসাইট ভিজিট
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => toast.info(`Viewing details of ${school.name}`)}
+                  className="cursor-pointer text-xs"
+                >
+                  <Eye className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
+                  বিস্তারিত দেখুন
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onSelect={() => {
+                    setTimeout(() => {
+                      onEdit(school);
+                    }, 50);
+                  }}
+                  className="cursor-pointer text-xs font-medium text-primary focus:text-primary"
+                >
+                  <Pencil className="mr-2 h-3.5 w-3.5 text-primary" />
+                  তথ্য সম্পাদনা
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => onDelete(school)}
+                  className="cursor-pointer text-xs text-destructive focus:text-destructive"
+                >
+                  <Trash2 className="mr-2 h-3.5 w-3.5" />
+                  মুছে ফেলুন
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         );
       },
     },

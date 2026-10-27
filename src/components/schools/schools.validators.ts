@@ -78,3 +78,21 @@ export const schoolFormSchema = z
   });
 
 export type SchoolFormValues = z.infer<typeof schoolFormSchema>;
+
+export const schoolUpdateFormSchema = z.object({
+  name: z.string().min(1, "বিদ্যালয়ের নাম আবশ্যক"),
+  division: z.string().min(1, "বিভাগ নির্বাচন করুন"),
+  district: z.string().min(1, "জেলা আবশ্যক"),
+  upazila: z.string().min(1, "উপজেলা আবশ্যক"),
+  cluster: z.string().min(1, "ক্লাস্টার আবশ্যক"),
+  address: z.string().optional(),
+  phone: z
+    .string()
+    .regex(BD_PHONE_REGEX, "১১ ডিজিটের সঠিক ফোন নম্বর দিন (যেমন: 01712345678)")
+    .optional()
+    .or(z.literal("")),
+  is_active: z.enum(["true", "false"]),
+});
+
+export type SchoolUpdateFormValues = z.infer<typeof schoolUpdateFormSchema>;
+

@@ -8,6 +8,7 @@ import { DataTable } from "@/components/data-table";
 import { Button } from "@/components/ui/button";
 import {
   SchoolOnboardingDialog,
+  SchoolEditDialog,
   schoolFilterConfigs,
   useSchoolsTable,
 } from "@/components/schools";
@@ -33,6 +34,9 @@ function SchoolsTableContent() {
     columns,
     isOnboardingOpen,
     setIsOnboardingOpen,
+    editingSchoolId,
+    isEditDialogOpen,
+    setIsEditDialogOpen,
     setPage,
     setLimit,
     setSearchTerm,
@@ -41,6 +45,7 @@ function SchoolsTableContent() {
     resetFilters,
     handleReload,
     handleSchoolCreated,
+    handleSchoolUpdated,
   } = useSchoolsTable();
 
   return (
@@ -139,6 +144,14 @@ function SchoolsTableContent() {
         open={isOnboardingOpen}
         onOpenChange={setIsOnboardingOpen}
         onSuccess={handleSchoolCreated}
+      />
+
+      {/* School Edit Dialog */}
+      <SchoolEditDialog
+        schoolId={editingSchoolId}
+        open={isEditDialogOpen}
+        onOpenChange={setIsEditDialogOpen}
+        onSuccess={handleSchoolUpdated}
       />
     </div>
   );
