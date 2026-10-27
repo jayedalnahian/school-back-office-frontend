@@ -40,107 +40,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { httpClient } from "@/lib/httpClient";
+import {
+  BD_PHONE_REGEX,
+  BANGLADESH_DIVISIONS,
+  schoolFormSchema,
+  type SchoolFormValues,
+} from "./schools.validators";
+import {
+  type CreatedSchoolResult,
+} from "./schools.types";
+import { onboardSchool, createSchool } from "./schools.service";
 
-// -------------------------------------------------------------
-// Validation Constants (Aligned with backend school.validators.ts)
-// -------------------------------------------------------------
-const BD_PHONE_REGEX = /^01[3-9]\d{8}$/;
-const GPS_CODE_REGEX = /^\d{8}$/;
-
-const BANGLADESH_DIVISIONS = [
-  "Dhaka",
-  "Chattogram",
-  "Rajshahi",
-  "Khulna",
-  "Barishal",
-  "Sylhet",
-  "Rangpur",
-  "Mymensingh",
-] as const;
-
-// -------------------------------------------------------------
-// Zod Form Schema matching backend Onboard/Create validation
-// -------------------------------------------------------------
-const formSchema = z
-  .object({
-    // School Details
-    name: z.string().min(1, "বিদ্যালয়ের নাম আবশ্যক"),
-    gps_code: z
-      .string()
-      .regex(GPS_CODE_REGEX, "জিপিএস কোড অবশ্যই ৮ ডিজিটের সংখ্যা হতে হবে (যেমন: 10203040)"),
-    division: z.string().min(1, "বিভাগ নির্বাচন করুন"),
-    district: z.string().min(1, "জেলা আবশ্যক"),
-    upazila: z.string().min(1, "উপজেলা আবশ্যক"),
-    cluster: z.string().min(1, "ক্লাস্টার আবশ্যক"),
-    address: z.string().optional(),
-    email: z
-      .string()
-      .email("সঠিক ইমেইল ঠিকানা দিন")
-      .optional()
-      .or(z.literal("")),
-    phone: z
-      .string()
-      .regex(BD_PHONE_REGEX, "১১ ডিজিটের সঠিক ফোন নম্বর দিন (যেমন: 01712345678)")
-      .optional()
-      .or(z.literal("")),
-    is_active: z.enum(["true", "false"]),
-
-    // Admin Details Flag
-    createAdmin: z.boolean(),
-
-    // Admin Details
-    admin_full_name: z.string().optional(),
-    admin_phone: z.string().optional(),
-    admin_email: z.string().optional(),
-  })
-  .superRefine((data, ctx) => {
-    if (data.createAdmin) {
-      if (!data.admin_full_name || data.admin_full_name.trim().length === 0) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ["admin_full_name"],
-          message: "অ্যাডমিনের পুরো নাম আবশ্যক",
-        });
-      }
-
-      if (!data.admin_phone || !BD_PHONE_REGEX.test(data.admin_phone.trim())) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ["admin_phone"],
-          message: "অ্যাডমিনের সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন (যেমন: 01712345678)",
-        });
-      }
-
-      if (data.admin_email && data.admin_email.trim().length > 0) {
-        const emailValidation = z.string().email().safeParse(data.admin_email.trim());
-        if (!emailValidation.success) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ["admin_email"],
-            message: "সঠিক অ্যাডমিন ইমেইল দিন",
-          });
-        }
-      }
-    }
-  });
-
-export type SchoolFormValues = z.infer<typeof formSchema>;
-
-export interface CreatedSchoolResult {
-  id: string;
-  name: string;
-  gps_code: string;
-  division: string;
-  district: string;
-  upazila: string;
-  cluster: string;
-  address?: string | null;
-  phone?: string | null;
-  email?: string | null;
-  is_active: boolean;
-  created_at?: string;
-}
+// Re-export CreatedSchoolResult and SchoolFormValues for backwards compatibility
+export type { CreatedSchoolResult, SchoolFormValues };
 
 interface SchoolOnboardingDialogProps {
   open: boolean;
@@ -164,7 +76,7 @@ export function SchoolOnboardingDialog({
     reset,
     formState: { errors },
   } = useForm<SchoolFormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(schoolFormSchema),
     defaultValues: {
       name: "",
       gps_code: "",
@@ -193,7 +105,7 @@ export function SchoolOnboardingDialog({
       let createdSchoolData: CreatedSchoolResult;
 
       if (values.createAdmin) {
-        // Calls backend POST /api/v1/schools/onboard (onboardSchool)
+        // Calls backend POST /api/v1/schools/onboard via schools.service
         const payload = {
           school: {
             name: values.name.trim(),
@@ -214,15 +126,8 @@ export function SchoolOnboardingDialog({
           },
         };
 
-        const res = await httpClient.post<{
-          school: CreatedSchoolResult;
-          admin: unknown;
-        }>("/schools/onboard", payload);
-
-        // https://skilled-profusely-foil.ngrok-free.dev/api/v1/schools/onboard
-
-
-        createdSchoolData = res.data?.school ?? {
+        const res = await onboardSchool(payload);
+        createdSchoolData = res.school ?? {
           id: `sch-${Date.now()}`,
           ...payload.school,
           is_active: payload.school.is_active,
@@ -231,7 +136,7 @@ export function SchoolOnboardingDialog({
 
         toast.success("বিদ্যালয় ও অ্যাডমিন অ্যাকাউন্ট সফলভাবে নিবন্ধিত হয়েছে!");
       } else {
-        // Calls backend POST /api/v1/schools (createSchool)
+        // Calls backend POST /api/v1/schools via schools.service
         const payload = {
           name: values.name.trim(),
           gps_code: values.gps_code.trim(),
@@ -245,8 +150,8 @@ export function SchoolOnboardingDialog({
           is_active: values.is_active === "true",
         };
 
-        const res = await httpClient.post<CreatedSchoolResult>("/schools", payload);
-        createdSchoolData = res.data ?? {
+        const res = await createSchool(payload);
+        createdSchoolData = res ?? {
           id: `sch-${Date.now()}`,
           ...payload,
           is_active: payload.is_active,

@@ -1,490 +1,47 @@
 "use client";
 
 import * as React from "react";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import { parseAsString, parseAsStringLiteral } from "nuqs";
-import { format } from "date-fns";
-import {
-  Building2,
-  Plus,
-  MoreHorizontal,
-  Globe,
-  Phone,
-  Mail,
-  MapPin,
-  CheckCircle2,
-  XCircle,
-  Eye,
-  Pencil,
-  Trash2,
-  Copy,
-  ExternalLink,
-} from "lucide-react";
-import {
-  DataTable,
-  DataTableColumnHeader,
-  useDataTableQuery,
-  type DataTableColumnDef,
-  type DataTableFilterConfig,
-  type DataTableQueryParams,
-  type PaginatedResponse,
-} from "@/components/data-table";
-import { Badge } from "@/components/ui/badge";
+import { Building2, Plus, RefreshCw } from "lucide-react";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+import { DataTable } from "@/components/data-table";
 import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { toast } from "sonner";
-import {
   SchoolOnboardingDialog,
-  type CreatedSchoolResult,
-} from "@/components/schools/school-onboarding-dialog";
+  schoolFilterConfigs,
+  useSchoolsTable,
+} from "@/components/schools";
 
-
-// -------------------------------------------------------------
-// 1. Data Type Definition
-// -------------------------------------------------------------
-export interface SchoolRecord {
-  id: string;
-  name: string;
-  code: string;
-  type: "government" | "private" | "semi_government";
-  email: string;
-  phone: string;
-  address: string;
-  website: string;
-  is_active: boolean;
-  total_students: number;
-  created_at: string;
-}
-
-// -------------------------------------------------------------
-// 2. Comprehensive Realistic Dummy Dataset (25 Records)
-// -------------------------------------------------------------
-const DUMMY_SCHOOLS: SchoolRecord[] = [
-  
-];
-
-// -------------------------------------------------------------
-// 3. Simulated Server-Side Processing (Search, Sort, Pagination)
-// -------------------------------------------------------------
-async function mockFetchSchools(
-  params: DataTableQueryParams
-): Promise<PaginatedResponse<SchoolRecord>> {
-  // Simulate network latency (250ms) to test keepPreviousData & isFetching
-  await new Promise((resolve) => setTimeout(resolve, 250));
-
-  let result = [...DUMMY_SCHOOLS];
-
-  // 1. Search filtering
-  if (params.search && params.search.trim().length > 0) {
-    const query = params.search.trim().toLowerCase();
-    result = result.filter(
-      (item) =>
-        item.name.toLowerCase().includes(query) ||
-        item.code.toLowerCase().includes(query) ||
-        item.email.toLowerCase().includes(query) ||
-        item.address.toLowerCase().includes(query) ||
-        item.phone.toLowerCase().includes(query)
-    );
-  }
-
-  // 2. Faceted filters: Type
-  if (params.type) {
-    const typeValue = params.type;
-    if (Array.isArray(typeValue)) {
-      result = result.filter((item) => (typeValue as string[]).includes(item.type));
-    } else {
-      result = result.filter((item) => item.type === typeValue);
-    }
-  }
-
-  // 3. Faceted filters: Status
-  if (params.status) {
-    const statusValue = params.status;
-    if (statusValue === "active") {
-      result = result.filter((item) => item.is_active === true);
-    } else if (statusValue === "inactive") {
-      result = result.filter((item) => item.is_active === false);
-    }
-  }
-
-  // 4. Server-Side Sorting
-  if (params.sortBy) {
-    const field = params.sortBy as keyof SchoolRecord;
-    const isAsc = params.sortOrder === "asc";
-
-    result.sort((a, b) => {
-      const valA = a[field];
-      const valB = b[field];
-
-      if (typeof valA === "string" && typeof valB === "string") {
-        return isAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
-      }
-      if (typeof valA === "number" && typeof valB === "number") {
-        return isAsc ? valA - valB : valB - valA;
-      }
-      if (typeof valA === "boolean" && typeof valB === "boolean") {
-        return isAsc
-          ? Number(valA) - Number(valB)
-          : Number(valB) - Number(valA);
-      }
-      return 0;
-    });
-  }
-
-  // 5. Server-Side Pagination
-  const total = result.length;
-  const page = Math.max(1, params.page ?? 1);
-  const limit = Math.max(1, params.limit ?? 10);
-  const totalPages = Math.ceil(total / limit);
-
-  const startIndex = (page - 1) * limit;
-  const pageSlice = result.slice(startIndex, startIndex + limit);
-
-  return {
-    data: pageSlice,
-    meta: {
-      page,
-      limit,
-      total,
-      totalPages,
-      hasNextPage: page < totalPages,
-      hasPreviousPage: page > 1,
-    },
-  };
-}
-
-// -------------------------------------------------------------
-// 4. Filter Configurations
-// -------------------------------------------------------------
-const schoolFilterConfigs: DataTableFilterConfig[] = [
-  {
-    key: "type",
-    label: "ধরন (Type)",
-    type: "multi-select",
-    options: [
-      { label: "Government", value: "government" },
-      { label: "Semi Government", value: "semi_government" },
-      { label: "Private", value: "private" },
-    ],
-  },
-  {
-    key: "status",
-    label: "অবস্থা (Status)",
-    type: "select",
-    options: [
-      { label: "সক্রিয় (Active)", value: "active" },
-      { label: "নিষ্ক্রিয় (Inactive)", value: "inactive" },
-    ],
-  },
-];
-
-// -------------------------------------------------------------
-// 5. Schools Management Page
-// -------------------------------------------------------------
+/**
+ * Schools Management Table Component
+ * Connects table UI to modular business logic and state management.
+ */
 function SchoolsTableContent() {
-  const [isOnboardingOpen, setIsOnboardingOpen] = React.useState(false);
-
-  // nuqs + use-debounce URL State Management
   const {
+    data,
+    meta,
+    isLoading,
+    isFetching,
+    isError,
+    error,
     page,
     limit,
     searchTerm,
     sortBy,
     sortOrder,
-    queryParams,
     filters,
-    setSearchTerm,
+    columns,
+    isOnboardingOpen,
+    setIsOnboardingOpen,
     setPage,
     setLimit,
+    setSearchTerm,
     setSorting,
     setFilter,
     resetFilters,
-  } = useDataTableQuery({
-    defaultPage: 1,
-    defaultLimit: 10,
-    defaultSortBy: "created_at",
-    defaultSortOrder: "desc",
-    debounceMs: 350,
-    filterParsers: {
-      type: parseAsString,
-      status: parseAsStringLiteral(["active", "inactive"] as const),
-    },
-  });
-
-  // TanStack Query with placeholderData: keepPreviousData
-  const { data, isLoading, isFetching, isPlaceholderData, isError, error } =
-    useQuery({
-      queryKey: ["schools", "list", queryParams],
-      queryFn: () => mockFetchSchools(queryParams),
-      placeholderData: keepPreviousData,
-      staleTime: 60 * 1000,
-    });
-
-  // Callback when a school is created to update local mock state
-  const handleSchoolCreated = (newSchool: CreatedSchoolResult) => {
-    const newRecord: SchoolRecord = {
-      id: newSchool.id,
-      name: newSchool.name,
-      code: newSchool.gps_code,
-      type: "government",
-      email: newSchool.email || `info@${newSchool.gps_code}.edu.bd`,
-      phone: newSchool.phone || "N/A",
-      address: [newSchool.address, newSchool.upazila, newSchool.district]
-        .filter(Boolean)
-        .join(", "),
-      website: `https://${newSchool.gps_code}.edu.bd`,
-      is_active: newSchool.is_active,
-      total_students: 0,
-      created_at: newSchool.created_at || new Date().toISOString(),
-    };
-    DUMMY_SCHOOLS.unshift(newRecord);
-  };
-
-  // Column Definitions
-  const columns = React.useMemo<DataTableColumnDef<SchoolRecord>[]>(
-    () => [
-      {
-        accessorKey: "code",
-        header: ({ column }) => (
-          <DataTableColumnHeader
-            column={column}
-            title="কোড"
-            sortBy={sortBy}
-            sortOrder={sortOrder}
-            onSortChange={setSorting}
-          />
-        ),
-        cell: ({ row }) => (
-          <span className="font-mono text-xs font-semibold text-primary">
-            {row.original.code}
-          </span>
-        ),
-      },
-      {
-        accessorKey: "name",
-        header: ({ column }) => (
-          <DataTableColumnHeader
-            column={column}
-            title="বিদ্যালয়ের নাম"
-            sortBy={sortBy}
-            sortOrder={sortOrder}
-            onSortChange={setSorting}
-          />
-        ),
-        cell: ({ row }) => {
-          const school = row.original;
-          return (
-            <div className="flex flex-col gap-0.5 max-w-[260px]">
-              <span className="font-medium text-foreground text-sm truncate" title={school.name}>
-                {school.name}
-              </span>
-              <div className="flex items-center gap-1.5 text-xs text-muted-foreground truncate">
-                <MapPin className="h-3 w-3 shrink-0" />
-                <span className="truncate">{school.address}</span>
-              </div>
-            </div>
-          );
-        },
-      },
-      {
-        accessorKey: "type",
-        header: ({ column }) => (
-          <DataTableColumnHeader
-            column={column}
-            title="ধরন"
-            sortBy={sortBy}
-            sortOrder={sortOrder}
-            onSortChange={setSorting}
-          />
-        ),
-        cell: ({ row }) => {
-          const type = row.original.type;
-          const typeConfig: Record<
-            SchoolRecord["type"],
-            { label: string; variant: "default" | "secondary" | "outline" }
-          > = {
-            government: { label: "Government", variant: "default" },
-            semi_government: { label: "Semi Govt", variant: "secondary" },
-            private: { label: "Private", variant: "outline" },
-          };
-          const config = typeConfig[type] ?? { label: type, variant: "outline" };
-          return (
-            <Badge variant={config.variant} className="capitalize text-[11px] font-normal">
-              {config.label}
-            </Badge>
-          );
-        },
-      },
-      {
-        accessorKey: "email",
-        header: ({ column }) => (
-          <DataTableColumnHeader
-            column={column}
-            title="যোগাযোগ"
-            sortBy={sortBy}
-            sortOrder={sortOrder}
-            onSortChange={setSorting}
-          />
-        ),
-        cell: ({ row }) => {
-          const school = row.original;
-          return (
-            <div className="flex flex-col text-xs text-muted-foreground gap-0.5">
-              <span className="flex items-center gap-1">
-                <Mail className="h-3 w-3 opacity-70" />
-                {school.email}
-              </span>
-              <span className="flex items-center gap-1">
-                <Phone className="h-3 w-3 opacity-70" />
-                {school.phone}
-              </span>
-            </div>
-          );
-        },
-      },
-      {
-        accessorKey: "total_students",
-        header: ({ column }) => (
-          <DataTableColumnHeader
-            column={column}
-            title="মোট শিক্ষার্থী"
-            sortBy={sortBy}
-            sortOrder={sortOrder}
-            onSortChange={setSorting}
-          />
-        ),
-        cell: ({ row }) => (
-          <span className="font-semibold text-xs tabular-nums text-foreground">
-            {row.original.total_students.toLocaleString()}
-          </span>
-        ),
-      },
-      {
-        accessorKey: "is_active",
-        header: ({ column }) => (
-          <DataTableColumnHeader
-            column={column}
-            title="অবস্থা"
-            sortBy={sortBy}
-            sortOrder={sortOrder}
-            onSortChange={setSorting}
-          />
-        ),
-        cell: ({ row }) => {
-          const isActive = row.original.is_active;
-          return isActive ? (
-            <Badge
-              variant="outline"
-              className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 text-[11px] font-normal gap-1"
-            >
-              <CheckCircle2 className="h-3 w-3" />
-              সক্রিয়
-            </Badge>
-          ) : (
-            <Badge
-              variant="outline"
-              className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20 text-[11px] font-normal gap-1"
-            >
-              <XCircle className="h-3 w-3" />
-              নিষ্ক্রিয়
-            </Badge>
-          );
-        },
-      },
-      {
-        accessorKey: "created_at",
-        header: ({ column }) => (
-          <DataTableColumnHeader
-            column={column}
-            title="অনবোর্ডিং তারিখ"
-            sortBy={sortBy}
-            sortOrder={sortOrder}
-            onSortChange={setSorting}
-          />
-        ),
-        cell: ({ row }) => {
-          const date = row.original.created_at;
-          try {
-            return (
-              <span className="text-xs text-muted-foreground whitespace-nowrap">
-                {format(new Date(date), "dd MMM, yyyy")}
-              </span>
-            );
-          } catch {
-            return <span className="text-xs text-muted-foreground">{date}</span>;
-          }
-        },
-      },
-      {
-        id: "actions",
-        enableHiding: false,
-        cell: ({ row }) => {
-          const school = row.original;
-          return (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
-                  <span className="sr-only">Open menu</span>
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuLabel className="text-xs">অ্যাকশন</DropdownMenuLabel>
-                <DropdownMenuItem
-                  onClick={() => {
-                    navigator.clipboard.writeText(school.id);
-                    toast.success("School ID ক্লিপবোর্ডে কপি হয়েছে");
-                  }}
-                  className="cursor-pointer text-xs"
-                >
-                  <Copy className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
-                  কপি আইডি
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => window.open(school.website, "_blank")}
-                  className="cursor-pointer text-xs"
-                >
-                  <ExternalLink className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
-                  ওয়েবসাইট ভিজিট
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={() => toast.info(`Viewing details of ${school.name}`)}
-                  className="cursor-pointer text-xs"
-                >
-                  <Eye className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
-                  বিস্তারিত দেখুন
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => toast.info(`Editing ${school.name}`)}
-                  className="cursor-pointer text-xs"
-                >
-                  <Pencil className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
-                  তথ্য সম্পাদনা
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={() => toast.error(`${school.name} মুছে ফেলার অনুরোধ করা হয়েছে`)}
-                  className="cursor-pointer text-xs text-destructive focus:text-destructive"
-                >
-                  <Trash2 className="mr-2 h-3.5 w-3.5" />
-                  মুছে ফেলুন
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          );
-        },
-      },
-    ],
-    [sortBy, sortOrder, setSorting]
-  );
+    handleReload,
+    handleSchoolCreated,
+  } = useSchoolsTable();
 
   return (
     <div className="space-y-6 w-full min-w-0">
@@ -508,6 +65,18 @@ function SchoolsTableContent() {
 
         <div className="flex items-center gap-2">
           <Button
+            variant="outline"
+            size="sm"
+            onClick={handleReload}
+            disabled={isFetching}
+            className="h-9 gap-1.5 text-xs shadow-xs"
+            title="ডাটা রিলোড করুন"
+          >
+            <RefreshCw className={cn("h-3.5 w-3.5", isFetching && "animate-spin text-primary")} />
+            <span className="hidden sm:inline">ডাটা রিলোড</span>
+          </Button>
+
+          <Button
             size="sm"
             onClick={() => setIsOnboardingOpen(true)}
             className="h-9 gap-1.5 text-xs font-semibold shadow-xs"
@@ -518,15 +87,28 @@ function SchoolsTableContent() {
         </div>
       </div>
 
-      {/* Live Data Table with Simulated Server-Side Processing */}
+      {/* Live Data Table with Real Server-Side Processing */}
       <DataTable
         columns={columns}
-        data={data?.data ?? []}
-        meta={data?.meta}
+        data={data}
+        meta={meta}
         isLoading={isLoading}
         isFetching={isFetching}
         isError={isError}
         error={error}
+        toolbarActions={
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleReload}
+            disabled={isFetching}
+            className="h-8 gap-1.5 text-xs"
+            title="ডাটা রিলোড করুন"
+          >
+            <RefreshCw className={cn("h-3.5 w-3.5", isFetching && "animate-spin text-primary")} />
+            <span>রিলোড</span>
+          </Button>
+        }
         // Pagination
         page={page}
         limit={limit}
@@ -562,6 +144,9 @@ function SchoolsTableContent() {
   );
 }
 
+/**
+ * Root page component wrapped with Suspense boundary for nuqs search params
+ */
 export default function SchoolsPage() {
   return (
     <React.Suspense
