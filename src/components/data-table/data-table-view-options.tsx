@@ -38,15 +38,16 @@ export function DataTableViewOptions<TData extends RowData = any>({
         <Button
           variant="outline"
           size="sm"
-          className="ml-auto hidden h-8 gap-1.5 text-xs lg:flex"
+          className="ml-auto hidden h-8.5 gap-1.5 text-xs font-medium lg:flex bg-background/80"
+          title="কলাম দর্শন নির্বাচন করুন"
         >
           <SlidersHorizontal className="h-3.5 w-3.5" />
-          View
+          কলাম দর্শন (View)
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[160px]">
+      <DropdownMenuContent align="end" className="w-[180px] shadow-md">
         <DropdownMenuLabel className="text-xs font-semibold">
-          Toggle columns
+          কলাম প্রদর্শন/লুকান (Columns)
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         {hideableColumns.map((column) => {

@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { Search, X } from "lucide-react";
-import { cn } from "cn";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DataTableFacetedFilter } from "./data-table-faceted-filter";
@@ -38,7 +38,7 @@ export function DataTableToolbar<TData extends RowData = any>({
   table,
   search = "",
   onSearchChange,
-  searchPlaceholder = "Search records...",
+  searchPlaceholder = "অনুসন্ধান করুন...",
   filterConfigs = [],
   filters = {},
   onResetFilters,
@@ -76,13 +76,14 @@ export function DataTableToolbar<TData extends RowData = any>({
               placeholder={searchPlaceholder}
               value={search}
               onChange={(event) => onSearchChange(event.target.value)}
-              className="h-8 w-full pl-8 pr-7 text-xs sm:w-[200px] lg:w-[280px]"
+              className="h-8.5 w-full pl-8 pr-7 text-xs sm:w-[220px] lg:w-[290px] bg-background/80"
             />
             {isSearchActive && (
               <button
                 type="button"
                 onClick={() => onSearchChange("")}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-0.5 rounded cursor-pointer"
+                title="সার্চ মুছুন"
               >
                 <X className="h-3.5 w-3.5" />
                 <span className="sr-only">Clear search</span>
@@ -129,9 +130,9 @@ export function DataTableToolbar<TData extends RowData = any>({
           <Button
             variant="ghost"
             onClick={onResetFilters}
-            className="h-8 px-2 text-xs font-medium text-muted-foreground hover:text-foreground lg:px-3"
+            className="h-8.5 px-2.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60"
           >
-            Reset
+            রিসেট (Reset)
             <X className="ml-1.5 h-3.5 w-3.5" />
           </Button>
         )}

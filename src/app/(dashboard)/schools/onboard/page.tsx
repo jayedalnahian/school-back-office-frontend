@@ -51,17 +51,17 @@ export default function SchoolOnboardPage() {
       </div>
 
       {/* Form Container Card */}
-      <Card className="shadow-xs">
-        <CardHeader className="border-b bg-muted/20 pb-4">
-          <CardTitle className="text-base font-semibold">
-            অনবোর্ডিং ফরম (POST /schools/onboard)
+      <Card className="rounded-2xl border border-border/80 bg-card shadow-xs overflow-hidden">
+        <CardHeader className="border-b border-border/80 bg-muted/30 p-5 sm:p-6 pb-4">
+          <CardTitle className="text-base sm:text-lg font-bold text-foreground font-sans">
+            নতুন বিদ্যালয় ও অ্যাডমিন অনবোর্ডিং ফরম (Registration Form)
           </CardTitle>
-          <CardDescription className="text-xs">
-            সঠিক তথ্য প্রদান করে নিচের ফর্মটি পূরণ করুন। &quot;*&quot; চিহ্নিত ফিল্ডসমূহ বাধ্যতামূলক।
+          <CardDescription className="text-xs sm:text-sm text-muted-foreground mt-0.5">
+            সঠিক ও প্রাতিষ্ঠানিক তথ্য প্রদান করে নিচের ফর্মটি পূরণ করুন। &quot;*&quot; চিহ্নিত ফিল্ডসমূহ পূরণ করা বাধ্যতামূলক।
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="pt-6">
+        <CardContent className="p-5 sm:p-7 pt-6">
           <SchoolOnboardForm
             onSuccess={() => {
               // Redirect back to schools table after a brief delay

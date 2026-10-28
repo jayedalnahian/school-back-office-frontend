@@ -30,16 +30,16 @@ const chartConfig = {
 
 export function AttendanceChart() {
   return (
-    <div className="w-full max-w-full min-w-0 overflow-hidden">
+    <div className="w-full max-w-full min-w-0 space-y-3">
       <ChartContainer
         config={chartConfig}
         className="h-[240px] sm:h-[260px] w-full max-w-full min-w-0 aspect-auto"
       >
         <BarChart
           data={chartData}
-          margin={{ top: 10, right: 10, left: -25, bottom: 0 }}
+          margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
         >
-          <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-muted/50" />
+          <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-border/60" />
           <XAxis
             dataKey="day"
             tickLine={false}
@@ -53,10 +53,22 @@ export function AttendanceChart() {
             className="text-[11px] sm:text-xs fill-muted-foreground font-medium"
           />
           <ChartTooltip content={<ChartTooltipContent />} />
-          <Bar dataKey="present" fill="var(--color-chart-1)" radius={[4, 4, 0, 0]} />
-          <Bar dataKey="absent" fill="var(--color-chart-2)" radius={[4, 4, 0, 0]} />
+          <Bar dataKey="present" fill="var(--color-chart-1)" radius={[6, 6, 0, 0]} maxBarSize={32} />
+          <Bar dataKey="absent" fill="var(--color-chart-2)" radius={[6, 6, 0, 0]} maxBarSize={32} />
         </BarChart>
       </ChartContainer>
+
+      {/* Clear Visual Legend */}
+      <div className="flex items-center justify-center gap-6 pt-2 border-t border-border/50 text-xs text-muted-foreground">
+        <div className="flex items-center gap-2">
+          <span className="h-2.5 w-2.5 rounded-full bg-[var(--chart-1)]" />
+          <span className="font-medium text-foreground">উপস্থিত (গড় ৮১৮ জন)</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="h-2.5 w-2.5 rounded-full bg-[var(--chart-2)]" />
+          <span className="font-medium text-foreground">অনুপস্থিত (গড় ২৪ জন)</span>
+        </div>
+      </div>
     </div>
   );
 }
