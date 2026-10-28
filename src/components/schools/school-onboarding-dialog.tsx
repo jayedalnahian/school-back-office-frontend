@@ -189,20 +189,20 @@ export function SchoolOnboardingDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-3xl max-h-[92vh] flex flex-col p-0 gap-0 overflow-hidden">
+      <DialogContent className="sm:max-w-3xl max-h-[92vh] flex flex-col p-0 gap-0 overflow-hidden rounded-2xl border border-border/80 shadow-2xl">
         {/* Header */}
-        <div className="p-6 pb-4 border-b bg-muted/20">
+        <div className="p-5 sm:p-6 pb-4 border-b border-border/80 bg-muted/30">
           <DialogHeader>
-            <div className="flex items-center gap-2">
-              <div className="rounded-lg bg-primary/10 p-2 text-primary">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary border border-primary/20 shadow-2xs">
                 <Building2 className="h-5 w-5" />
               </div>
               <div>
-                <DialogTitle className="text-lg sm:text-xl font-bold text-foreground">
+                <DialogTitle className="text-lg sm:text-xl font-bold text-foreground font-sans">
                   নতুন বিদ্যালয় অনবোর্ডিং ও নিবন্ধন
                 </DialogTitle>
                 <DialogDescription className="text-xs sm:text-sm text-muted-foreground mt-0.5">
-                  জাতীয় শিক্ষা ব্যাক-অফিস সিস্টেমে নতুন বিদ্যালয় এবং অ্যাডমিন ইউজারের তথ্য যুক্ত করুন
+                  জাতীয় শিক্ষা ব্যাক-অফিস সিস্টেমে নতুন বিদ্যালয় এবং দায়িত্বপ্রাপ্ত অ্যাডমিন ইউজারের তথ্য যুক্ত করুন
                 </DialogDescription>
               </div>
             </div>
@@ -213,19 +213,19 @@ export function SchoolOnboardingDialog({
         <form
           id="school-onboard-form"
           onSubmit={handleSubmit(onSubmit)}
-          className="flex-1 overflow-y-auto p-6 space-y-6"
+          className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-6"
         >
           {/* Section 1: School Basic Information */}
           <div className="space-y-4">
-            <div className="flex items-center justify-between pb-2 border-b">
+            <div className="flex items-center justify-between pb-2.5 border-b border-border/70">
               <div className="flex items-center gap-2">
                 <Building2 className="h-4 w-4 text-primary" />
                 <h3 className="text-sm font-semibold text-foreground">
                   বিদ্যালয়ের তথ্যাবলি (School Details)
                 </h3>
               </div>
-              <Badge variant="outline" className="text-[11px] font-normal">
-                প্রয়োজনীয় ফিল্ডগুলোতে * চিহ্ন রয়েছে
+              <Badge variant="outline" className="text-[11px] font-normal bg-background/80">
+                &quot;*&quot; চিহ্নিত ফিল্ডসমূহ বাধ্যতামূলক
               </Badge>
             </div>
 

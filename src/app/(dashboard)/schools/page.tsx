@@ -46,40 +46,47 @@ function SchoolsTableContent() {
   return (
     <div className="space-y-6 w-full min-w-0">
       {/* Page Header */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b pb-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-border/80 pb-5">
         <div>
-          <div className="flex items-center gap-2">
-            <div className="rounded-lg bg-primary/10 p-2 text-primary">
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary border border-primary/20 shadow-2xs">
               <Building2 className="h-5 w-5" />
             </div>
             <div>
-              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
-                বিদ্যালয় অনবোর্ডিং ও তালিকা
-              </h1>
-              <p className="text-xs sm:text-sm text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl sm:text-2xl font-bold text-foreground font-sans">
+                  বিদ্যালয় অনবোর্ডিং ও তালিকা
+                </h1>
+                <span className="hidden sm:inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-semibold text-primary">
+                  মডিউল
+                </span>
+              </div>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
                 সিস্টেমে নিবন্ধিত সকল বিদ্যালয় পর্যবেক্ষণ, সর্টিং, ফিল্টারিং ও পরিচালনা করুন
               </p>
             </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5 shrink-0">
           <Button
+            type="button"
             variant="outline"
             size="sm"
             onClick={handleReload}
             disabled={isFetching}
-            className="h-9 gap-1.5 text-xs shadow-xs"
+            className="h-9 gap-1.5 text-xs font-medium shadow-xs bg-background hover:bg-accent border-border/80"
             title="ডাটা রিলোড করুন"
           >
             <RefreshCw className={cn("h-3.5 w-3.5", isFetching && "animate-spin text-primary")} />
-            <span className="hidden sm:inline">ডাটা রিলোড</span>
+            <span>ডাটা রিলোড</span>
           </Button>
 
           <Button
+            type="button"
             size="sm"
             onClick={() => setIsOnboardingOpen(true)}
-            className="h-9 gap-1.5 text-xs font-semibold shadow-xs"
+            className="h-9 gap-1.5 text-xs font-semibold shadow-xs bg-primary hover:bg-primary/90 text-primary-foreground"
           >
             <Plus className="h-4 w-4" />
             নতুন বিদ্যালয় যুক্ত করুন
@@ -98,6 +105,7 @@ function SchoolsTableContent() {
         error={error}
         toolbarActions={
           <Button
+            type="button"
             variant="outline"
             size="sm"
             onClick={handleReload}

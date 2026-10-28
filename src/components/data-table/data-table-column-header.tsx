@@ -8,7 +8,7 @@ import {
   EyeOff,
   RotateCcw,
 } from "lucide-react";
-import { cn } from "cn";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -107,28 +107,28 @@ export function DataTableColumnHeader<
             )}
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="w-40">
+        <DropdownMenuContent align="start" className="w-52 shadow-md">
           <DropdownMenuItem
             onClick={() => handleSetSort("asc")}
-            className={cn("cursor-pointer", isAsc && "bg-accent font-medium")}
+            className={cn("cursor-pointer text-xs", isAsc && "bg-accent font-semibold text-primary")}
           >
             <ArrowUp className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
-            Ascending
+            আরোহী ক্রমানুসারে (Ascending)
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => handleSetSort("desc")}
-            className={cn("cursor-pointer", isDesc && "bg-accent font-medium")}
+            className={cn("cursor-pointer text-xs", isDesc && "bg-accent font-semibold text-primary")}
           >
             <ArrowDown className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
-            Descending
+            অবরোহী ক্রমানুসারে (Descending)
           </DropdownMenuItem>
           {isActive && (
             <DropdownMenuItem
               onClick={() => handleSetSort(null)}
-              className="cursor-pointer text-muted-foreground"
+              className="cursor-pointer text-xs text-muted-foreground"
             >
               <RotateCcw className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
-              Reset sort
+              সর্টিং রিসেট করুন (Reset)
             </DropdownMenuItem>
           )}
           {column && column.getCanHide && column.getCanHide() && (
@@ -136,10 +136,10 @@ export function DataTableColumnHeader<
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={() => column.toggleVisibility(false)}
-                className="cursor-pointer text-muted-foreground"
+                className="cursor-pointer text-xs text-muted-foreground"
               >
                 <EyeOff className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
-                Hide column
+                কলামটি লুকান (Hide)
               </DropdownMenuItem>
             </>
           )}

@@ -95,24 +95,24 @@ export function useUsersQuery(params: DataTableQueryParams) {
 const userFilterConfigs: DataTableFilterConfig[] = [
   {
     key: "role",
-    label: "Role",
+    label: "পদবি / রোল (Role)",
     type: "multi-select",
     options: [
-      { label: "Super Admin", value: "super_admin", icon: Shield },
-      { label: "School Admin", value: "school_admin", icon: Shield },
-      { label: "Teacher", value: "teacher", icon: BookOpen },
-      { label: "Student", value: "student", icon: GraduationCap },
-      { label: "Guardian", value: "guardian", icon: UserCheck },
+      { label: "সুপার অ্যাডমিন (Super Admin)", value: "super_admin", icon: Shield },
+      { label: "স্কুল অ্যাডমিন (School Admin)", value: "school_admin", icon: Shield },
+      { label: "শিক্ষক (Teacher)", value: "teacher", icon: BookOpen },
+      { label: "শিক্ষার্থী (Student)", value: "student", icon: GraduationCap },
+      { label: "অভিভাবক (Guardian)", value: "guardian", icon: UserCheck },
     ],
   },
   {
     key: "status",
-    label: "Status",
+    label: "অবস্থা (Status)",
     type: "select",
     options: [
-      { label: "Active", value: "active", icon: UserCheck },
-      { label: "Inactive", value: "inactive", icon: UserX },
-      { label: "Suspended", value: "suspended", icon: UserX },
+      { label: "সক্রিয় (Active)", value: "active", icon: UserCheck },
+      { label: "নিষ্ক্রিয় (Inactive)", value: "inactive", icon: UserX },
+      { label: "স্থগিত (Suspended)", value: "suspended", icon: UserX },
     ],
   },
 ];
@@ -159,7 +159,7 @@ export function UsersTableExample() {
         header: ({ column }) => (
           <DataTableColumnHeader
             column={column}
-            title="User Name"
+            title="ইউজারের নাম ও মোবাইল"
             sortBy={sortBy}
             sortOrder={sortOrder}
             onSortChange={setSorting}
@@ -168,9 +168,9 @@ export function UsersTableExample() {
         cell: ({ row }) => {
           const user = row.original;
           return (
-            <div className="flex flex-col">
-              <span className="font-medium text-foreground">{user.full_name}</span>
-              <span className="text-xs text-muted-foreground">{user.phone}</span>
+            <div className="flex flex-col gap-0.5">
+              <span className="font-semibold text-foreground text-sm">{user.full_name}</span>
+              <span className="text-xs text-muted-foreground font-mono">{user.phone}</span>
             </div>
           );
         },
@@ -180,7 +180,7 @@ export function UsersTableExample() {
         header: ({ column }) => (
           <DataTableColumnHeader
             column={column}
-            title="Email"
+            title="ইমেইল অ্যাড্রেস"
             sortBy={sortBy}
             sortOrder={sortOrder}
             onSortChange={setSorting}
@@ -197,7 +197,7 @@ export function UsersTableExample() {
         header: ({ column }) => (
           <DataTableColumnHeader
             column={column}
-            title="Role"
+            title="পদবি / রোল"
             sortBy={sortBy}
             sortOrder={sortOrder}
             onSortChange={setSorting}
@@ -206,15 +206,15 @@ export function UsersTableExample() {
         cell: ({ row }) => {
           const role = row.original.role;
           const roleLabels: Record<UserRole, { label: string; variant: "default" | "secondary" | "outline" }> = {
-            super_admin: { label: "Super Admin", variant: "default" },
-            school_admin: { label: "School Admin", variant: "secondary" },
-            teacher: { label: "Teacher", variant: "outline" },
-            student: { label: "Student", variant: "outline" },
-            guardian: { label: "Guardian", variant: "outline" },
+            super_admin: { label: "সুপার অ্যাডমিন", variant: "default" },
+            school_admin: { label: "স্কুল অ্যাডমিন", variant: "secondary" },
+            teacher: { label: "শিক্ষক", variant: "outline" },
+            student: { label: "শিক্ষার্থী", variant: "outline" },
+            guardian: { label: "অভিভাবক", variant: "outline" },
           };
           const config = roleLabels[role] ?? { label: role, variant: "outline" };
           return (
-            <Badge variant={config.variant} className="capitalize text-[11px] font-normal">
+            <Badge variant={config.variant} className="text-[11px] font-medium">
               {config.label}
             </Badge>
           );
@@ -225,7 +225,7 @@ export function UsersTableExample() {
         header: ({ column }) => (
           <DataTableColumnHeader
             column={column}
-            title="Status"
+            title="অবস্থা"
             sortBy={sortBy}
             sortOrder={sortOrder}
             onSortChange={setSorting}
@@ -234,13 +234,13 @@ export function UsersTableExample() {
         cell: ({ row }) => {
           const status = row.original.status;
           const statusStyles: Record<UserStatus, { label: string; className: string }> = {
-            active: { label: "Active", className: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20" },
-            inactive: { label: "Inactive", className: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20" },
-            suspended: { label: "Suspended", className: "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20" },
+            active: { label: "সক্রিয়", className: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20" },
+            inactive: { label: "নিষ্ক্রিয়", className: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20" },
+            suspended: { label: "স্থগিত", className: "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20" },
           };
           const badge = statusStyles[status] ?? { label: status, className: "" };
           return (
-            <Badge variant="outline" className={`text-[11px] font-normal ${badge.className}`}>
+            <Badge variant="outline" className={`text-[11px] font-medium ${badge.className}`}>
               {badge.label}
             </Badge>
           );
@@ -251,7 +251,7 @@ export function UsersTableExample() {
         header: ({ column }) => (
           <DataTableColumnHeader
             column={column}
-            title="Joined Date"
+            title="নিবন্ধনের তারিখ"
             sortBy={sortBy}
             sortOrder={sortOrder}
             onSortChange={setSorting}
@@ -262,7 +262,7 @@ export function UsersTableExample() {
           try {
             return (
               <span className="text-xs text-muted-foreground whitespace-nowrap">
-                {format(new Date(date), "MMM dd, yyyy")}
+                {format(new Date(date), "dd MMM, yyyy")}
               </span>
             );
           } catch {
@@ -283,27 +283,27 @@ export function UsersTableExample() {
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-44">
-                <DropdownMenuLabel className="text-xs">Actions</DropdownMenuLabel>
+              <DropdownMenuContent align="end" className="w-48 shadow-md">
+                <DropdownMenuLabel className="text-xs">অ্যাকশন (Actions)</DropdownMenuLabel>
                 <DropdownMenuItem
                   onClick={() => navigator.clipboard.writeText(user.id)}
                   className="cursor-pointer text-xs"
                 >
-                  Copy user ID
+                  ইউজার আইডি কপি করুন
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="cursor-pointer text-xs">
                   <Eye className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
-                  View details
+                  বিস্তারিত দেখুন
                 </DropdownMenuItem>
                 <DropdownMenuItem className="cursor-pointer text-xs">
                   <Pencil className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
-                  Edit user
+                  তথ্য সম্পাদনা
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="cursor-pointer text-xs text-destructive focus:text-destructive">
                   <Trash2 className="mr-2 h-3.5 w-3.5" />
-                  Delete user
+                  ইউজার মুছে ফেলুন
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -315,17 +315,33 @@ export function UsersTableExample() {
   );
 
   return (
-    <div className="space-y-4 p-6">
-      <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+    <div className="space-y-6 w-full min-w-0">
+      {/* Page Header */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-border/80 pb-5">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Users Management</h1>
-          <p className="text-sm text-muted-foreground">
-            Manage system administrators, teachers, students, and guardians.
-          </p>
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary border border-primary/20 shadow-2xs">
+              <UserCheck className="h-5 w-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl sm:text-2xl font-bold text-foreground font-sans">
+                  ইউজার ব্যবস্থাপনা (User Management)
+                </h1>
+                <span className="hidden sm:inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-semibold text-primary">
+                  অ্যাডমিন কন্ট্রোল
+                </span>
+              </div>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
+                সিস্টেম অ্যাডমিনিস্ট্রেটর, প্রধান শিক্ষক, শিক্ষক, শিক্ষার্থী ও অভিভাবকদের অ্যাকাউন্ট পরিচালনা করুন
+              </p>
+            </div>
+          </div>
         </div>
-        <Button size="sm" className="h-9 gap-1 text-xs">
-          <Plus className="h-3.5 w-3.5" />
-          Add New User
+
+        <Button size="sm" className="h-9 gap-1.5 text-xs font-semibold shadow-xs bg-primary hover:bg-primary/90 text-primary-foreground shrink-0">
+          <Plus className="h-4 w-4" />
+          নতুন ইউজার যুক্ত করুন
         </Button>
       </div>
 
@@ -349,15 +365,15 @@ export function UsersTableExample() {
         onSortChange={setSorting}
         // Search
         search={searchTerm}
-        searchPlaceholder="Search by name, email, or phone..."
+        searchPlaceholder="নাম, ইমেইল বা মোবাইল দিয়ে খুঁজুন..."
         onSearchChange={setSearchTerm}
         // Faceted Filters
         filterConfigs={userFilterConfigs}
         filters={filters}
         onFilterChange={setFilter}
         onResetFilters={resetFilters}
-        emptyTitle="No users found"
-        emptyDescription="We couldn't find any users matching your filter or search criteria."
+        emptyTitle="কোনো ইউজার পাওয়া যায়নি"
+        emptyDescription="আপনার ফিল্টার বা সার্চ কিওয়ার্ডের সাথে মেলে এমন কোনো ইউজার অ্যাকাউন্ট ডাটাবেজে নেই।"
       />
     </div>
   );

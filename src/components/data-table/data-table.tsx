@@ -9,7 +9,7 @@ import {
   getCoreRowModel,
 } from "@tanstack/react-table/legacy";
 import { Inbox } from "lucide-react";
-import { cn } from "cn";
+import { cn } from "@/lib/utils";
 import {
   Table,
   TableBody,
@@ -117,16 +117,16 @@ export function DataTable<TData extends RowData = any, TValue = unknown>({
       )}
 
       {/* Main Table Container */}
-      <div className="relative rounded-md border bg-card shadow-xs">
+      <div className="relative rounded-xl border border-border/80 bg-card shadow-xs overflow-hidden">
         {/* Subtle background fetching progress bar */}
         {isFetching && !isLoading && (
-          <div className="absolute inset-x-0 top-0 z-10 h-0.5 bg-primary/80 animate-pulse" />
+          <div className="absolute inset-x-0 top-0 z-10 h-0.5 bg-primary animate-pulse" />
         )}
 
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="hover:bg-transparent">
+              <TableRow key={headerGroup.id} className="hover:bg-transparent border-b border-border/80 bg-muted/40">
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead
@@ -155,9 +155,9 @@ export function DataTable<TData extends RowData = any, TValue = unknown>({
                   {columns.map((_, colIndex) => (
                     <TableCell
                       key={`skeleton-cell-${colIndex}`}
-                      className="py-3"
+                      className="py-3.5"
                     >
-                      <Skeleton className="h-5 w-full" />
+                      <Skeleton className="h-5 w-full rounded" />
                     </TableCell>
                   ))}
                 </TableRow>
@@ -169,14 +169,14 @@ export function DataTable<TData extends RowData = any, TValue = unknown>({
                   colSpan={columns.length}
                   className="h-44 text-center"
                 >
-                  <div className="flex flex-col items-center justify-center gap-1.5 text-destructive">
+                  <div className="flex flex-col items-center justify-center gap-2 text-destructive">
                     <p className="text-sm font-semibold">
-                      Failed to load records
+                      ডাটা লোড করতে সমস্যা হয়েছে (Failed to load records)
                     </p>
                     <p className="text-xs text-muted-foreground">
                       {error instanceof Error
                         ? error.message
-                        : "An unexpected error occurred while fetching data."}
+                        : "সার্ভার থেকে তথ্য গ্রহণ করার সময় একটি ত্রুটি ঘটেছে। অনুগ্রহ করে আবার চেষ্টা করুন।"}
                     </p>
                   </div>
                 </TableCell>
@@ -188,13 +188,13 @@ export function DataTable<TData extends RowData = any, TValue = unknown>({
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                   className={cn(
-                    "transition-colors",
-                    onRowClick && "cursor-pointer hover:bg-muted/60"
+                    "transition-colors hover:bg-muted/40",
+                    onRowClick && "cursor-pointer"
                   )}
                   onClick={() => onRowClick?.(row.original)}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="py-2.5 text-sm">
+                    <TableCell key={cell.id} className="py-3 text-sm">
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
@@ -211,16 +211,16 @@ export function DataTable<TData extends RowData = any, TValue = unknown>({
                   className="h-52 text-center"
                 >
                   <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
-                    <div className="rounded-full bg-muted p-3">
+                    <div className="rounded-full bg-muted/80 p-3 ring-1 ring-border/80">
                       <Inbox className="h-6 w-6 stroke-[1.5] text-muted-foreground" />
                     </div>
                     <div className="space-y-1">
                       <p className="text-sm font-semibold text-foreground">
-                        {emptyTitle ?? "No records found"}
+                        {emptyTitle ?? "কোনো তথ্য পাওয়া যায়নি"}
                       </p>
-                      <p className="text-xs text-muted-foreground max-w-sm">
+                      <p className="text-xs text-muted-foreground max-w-sm leading-relaxed">
                         {emptyDescription ??
-                          "No results matched your current search and filter criteria."}
+                          "আপনার বর্তমান সার্চ ও ফিল্টার অনুযায়ী কোনো রেকর্ড খুঁজে পাওয়া যায়নি।"}
                       </p>
                     </div>
                     {onResetFilters && (
@@ -228,9 +228,9 @@ export function DataTable<TData extends RowData = any, TValue = unknown>({
                         variant="outline"
                         size="sm"
                         onClick={onResetFilters}
-                        className="mt-2 h-7 text-xs"
+                        className="mt-2 h-8 text-xs font-medium"
                       >
-                        Reset all filters
+                        ফিল্টার রিসেট করুন (Reset filters)
                       </Button>
                     )}
                   </div>

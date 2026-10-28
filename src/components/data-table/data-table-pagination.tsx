@@ -7,7 +7,7 @@ import {
   ChevronsLeft,
   ChevronsRight,
 } from "lucide-react";
-import { cn } from "cn";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -84,39 +84,37 @@ export function DataTablePagination<TData extends RowData = any>({
       <div className="flex-1 text-xs text-muted-foreground">
         {selectedRowsCount > 0 ? (
           <span>
-            {selectedRowsCount} of {totalTableRows} row(s) selected.
+            {selectedRowsCount} / {totalTableRows}টি সারি নির্বাচিত
           </span>
         ) : totalRecords > 0 ? (
           <span>
-            Showing{" "}
-            <span className="font-medium text-foreground">
+            মোট <span className="font-semibold text-foreground">{totalRecords}</span>টি রেকর্ডের মধ্যে{" "}
+            <span className="font-semibold text-foreground">
               {Math.min((currentPage - 1) * currentLimit + 1, totalRecords)}
-            </span>{" "}
-            to{" "}
-            <span className="font-medium text-foreground">
+            </span>
+            –
+            <span className="font-semibold text-foreground">
               {Math.min(currentPage * currentLimit, totalRecords)}
             </span>{" "}
-            of{" "}
-            <span className="font-medium text-foreground">{totalRecords}</span>{" "}
-            records
+            প্রদর্শিত
           </span>
         ) : (
-          <span>No records found.</span>
+          <span>কোনো রেকর্ড পাওয়া যায়নি</span>
         )}
       </div>
 
       {/* Right: Page size select, current page and navigation buttons */}
-      <div className="flex flex-wrap items-center gap-4 sm:gap-6 lg:gap-8">
+      <div className="flex flex-wrap items-center gap-3 sm:gap-5">
         {/* Page size changer */}
         <div className="flex items-center gap-2">
           <p className="text-xs font-medium text-muted-foreground">
-            Rows per page
+            প্রতি পৃষ্ঠায়:
           </p>
           <Select
             value={`${currentLimit}`}
             onValueChange={handleLimitChange}
           >
-            <SelectTrigger className="h-8 w-[72px] text-xs">
+            <SelectTrigger className="h-8 w-[72px] text-xs bg-background/80">
               <SelectValue placeholder={`${currentLimit}`} />
             </SelectTrigger>
             <SelectContent side="top">
@@ -135,7 +133,7 @@ export function DataTablePagination<TData extends RowData = any>({
 
         {/* Current page indicator */}
         <div className="flex items-center justify-center text-xs font-medium text-muted-foreground">
-          Page <span className="mx-1 text-foreground font-semibold">{currentPage}</span> of{" "}
+          পৃষ্ঠা <span className="mx-1 text-foreground font-semibold">{currentPage}</span> /{" "}
           <span className="ml-1 text-foreground font-semibold">
             {Math.max(1, totalPages)}
           </span>
@@ -149,9 +147,9 @@ export function DataTablePagination<TData extends RowData = any>({
             className="hidden h-8 w-8 lg:flex"
             onClick={() => handlePageChange(1)}
             disabled={!canPrevious}
-            title="First page"
+            title="প্রথম পৃষ্ঠা (First page)"
+            aria-label="First page"
           >
-            <span className="sr-only">Go to first page</span>
             <ChevronsLeft className="h-4 w-4" />
           </Button>
           <Button
@@ -160,9 +158,9 @@ export function DataTablePagination<TData extends RowData = any>({
             className="h-8 w-8"
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={!canPrevious}
-            title="Previous page"
+            title="পূর্ববর্তী পৃষ্ঠা (Previous page)"
+            aria-label="Previous page"
           >
-            <span className="sr-only">Go to previous page</span>
             <ChevronLeft className="h-4 w-4" />
           </Button>
           <Button
@@ -171,9 +169,9 @@ export function DataTablePagination<TData extends RowData = any>({
             className="h-8 w-8"
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={!canNext}
-            title="Next page"
+            title="পরবর্তী পৃষ্ঠা (Next page)"
+            aria-label="Next page"
           >
-            <span className="sr-only">Go to next page</span>
             <ChevronRight className="h-4 w-4" />
           </Button>
           <Button
@@ -182,9 +180,9 @@ export function DataTablePagination<TData extends RowData = any>({
             className="hidden h-8 w-8 lg:flex"
             onClick={() => handlePageChange(totalPages)}
             disabled={!canNext}
-            title="Last page"
+            title="শেষ পৃষ্ঠা (Last page)"
+            aria-label="Last page"
           >
-            <span className="sr-only">Go to last page</span>
             <ChevronsRight className="h-4 w-4" />
           </Button>
         </div>

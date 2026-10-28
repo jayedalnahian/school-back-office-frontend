@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { Check, PlusCircle } from "lucide-react";
-import { cn } from "cn";
+import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -121,7 +121,7 @@ export function DataTableFacetedFilter({
                     variant="secondary"
                     className="rounded-sm px-1.5 py-0 font-normal"
                   >
-                    {selectedSet.size} selected
+                    {selectedSet.size}টি নির্বাচিত
                   </Badge>
                 ) : (
                   options
@@ -141,11 +141,11 @@ export function DataTableFacetedFilter({
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0" align="start">
+      <PopoverContent className="w-[220px] p-0 shadow-md" align="start">
         <Command>
           <CommandInput placeholder={title} />
           <CommandList>
-            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandEmpty>কোনো ফলাফল পাওয়া যায়নি।</CommandEmpty>
             <CommandGroup>
               {options.map((option) => {
                 const isSelected = selectedSet.has(option.value);
@@ -155,7 +155,7 @@ export function DataTableFacetedFilter({
                   <CommandItem
                     key={option.value}
                     onSelect={() => handleSelectOption(option.value)}
-                    className="cursor-pointer"
+                    className="cursor-pointer text-xs"
                   >
                     <div
                       className={cn(
@@ -186,9 +186,9 @@ export function DataTableFacetedFilter({
                 <CommandGroup>
                   <CommandItem
                     onSelect={handleClearFilters}
-                    className="justify-center text-center font-medium text-destructive cursor-pointer"
+                    className="justify-center text-center font-medium text-destructive cursor-pointer text-xs"
                   >
-                    Clear filters
+                    ফিল্টার মুছে ফেলুন (Clear filters)
                   </CommandItem>
                 </CommandGroup>
               </>

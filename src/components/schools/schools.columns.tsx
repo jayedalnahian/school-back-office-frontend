@@ -43,9 +43,9 @@ export const schoolFilterConfigs: DataTableFilterConfig[] = [
     label: "ধরন (Type)",
     type: "multi-select",
     options: [
-      { label: "Government", value: "government" },
-      { label: "Semi Government", value: "semi_government" },
-      { label: "Private", value: "private" },
+      { label: "সরকারি (Govt)", value: "government" },
+      { label: "আধা-সরকারি (Semi Govt)", value: "semi_government" },
+      { label: "বেসরকারি (Private)", value: "private" },
     ],
   },
   {
@@ -136,13 +136,13 @@ export function getSchoolColumns({
           SchoolRecord["type"],
           { label: string; variant: "default" | "secondary" | "outline" }
         > = {
-          government: { label: "Government", variant: "default" },
-          semi_government: { label: "Semi Govt", variant: "secondary" },
-          private: { label: "Private", variant: "outline" },
+          government: { label: "সরকারি (Govt)", variant: "default" },
+          semi_government: { label: "আধা-সরকারি (Semi Govt)", variant: "secondary" },
+          private: { label: "বেসরকারি (Private)", variant: "outline" },
         };
         const config = typeConfig[type] ?? { label: type, variant: "outline" };
         return (
-          <Badge variant={config.variant} className="capitalize text-[11px] font-normal">
+          <Badge variant={config.variant} className="text-[11px] font-medium">
             {config.label}
           </Badge>
         );
@@ -282,18 +282,18 @@ export function getSchoolColumns({
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                onClick={() => toast.info(`Viewing details of ${school.name}`)}
+                onClick={() => toast.info(`${school.name}-এর বিস্তারিত তথ্য`)}
                 className="cursor-pointer text-xs"
               >
                 <Eye className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
-                বিস্তারিত দেখুন
+                বিস্তারিত তথ্য দেখুন
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => toast.info(`Editing ${school.name}`)}
+                onClick={() => toast.info(`${school.name}-এর তথ্য সম্পাদনা`)}
                 className="cursor-pointer text-xs"
               >
                 <Pencil className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
-                তথ্য সম্পাদনা
+                তথ্য সম্পাদনা করুন
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
@@ -301,7 +301,7 @@ export function getSchoolColumns({
                 className="cursor-pointer text-xs text-destructive focus:text-destructive"
               >
                 <Trash2 className="mr-2 h-3.5 w-3.5" />
-                মুছে ফেলুন
+                মুছে ফেলুন (Delete)
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
