@@ -117,7 +117,7 @@ export function DataTable<TData extends RowData = any, TValue = unknown>({
       )}
 
       {/* Main Table Container */}
-      <div className="relative rounded-xl border border-border/80 bg-card shadow-xs overflow-hidden">
+      <div className="relative rounded-md border border-border bg-card shadow-xs overflow-hidden">
         {/* Subtle background fetching progress bar */}
         {isFetching && !isLoading && (
           <div className="absolute inset-x-0 top-0 z-10 h-0.5 bg-primary animate-pulse" />

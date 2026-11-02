@@ -49,7 +49,7 @@ function SchoolsTableContent() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-border/80 pb-5">
         <div>
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary border border-primary/20 shadow-2xs">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary border border-primary/20">
               <Building2 className="h-5 w-5" />
             </div>
             <div>
@@ -57,7 +57,7 @@ function SchoolsTableContent() {
                 <h1 className="text-xl sm:text-2xl font-bold text-foreground font-sans">
                   বিদ্যালয় অনবোর্ডিং ও তালিকা
                 </h1>
-                <span className="hidden sm:inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-semibold text-primary">
+                <span className="hidden sm:inline-flex items-center rounded-md border border-border bg-muted/40 px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
                   মডিউল
                 </span>
               </div>

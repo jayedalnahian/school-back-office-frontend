@@ -36,10 +36,10 @@ export default function SchoolOnboardPage() {
           </Button>
           <div>
             <div className="flex items-center gap-2">
-              <div className="rounded-lg bg-primary/10 p-1.5 text-primary">
+              <div className="rounded-md bg-primary/10 p-1.5 text-primary border border-primary/20">
                 <Building2 className="size-5" />
               </div>
-              <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
+              <h1 className="text-xl font-bold text-foreground sm:text-2xl font-sans">
                 বিদ্যালয় অনবোর্ডিং (School Onboarding)
               </h1>
             </div>
@@ -51,8 +51,8 @@ export default function SchoolOnboardPage() {
       </div>
 
       {/* Form Container Card */}
-      <Card className="rounded-2xl border border-border/80 bg-card shadow-xs overflow-hidden">
-        <CardHeader className="border-b border-border/80 bg-muted/30 p-5 sm:p-6 pb-4">
+      <Card className="rounded-lg border border-border bg-card shadow-xs overflow-hidden">
+        <CardHeader className="border-b border-border bg-muted/20 p-5 sm:p-6 pb-4">
           <CardTitle className="text-base sm:text-lg font-bold text-foreground font-sans">
             নতুন বিদ্যালয় ও অ্যাডমিন অনবোর্ডিং ফরম (Registration Form)
           </CardTitle>

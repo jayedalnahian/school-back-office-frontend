@@ -201,10 +201,10 @@ export function AppSidebar({ onItemClick, className }: AppSidebarProps) {
       )}
     >
       {/* 1. Brand & Tenant Header */}
-      <div className="shrink-0 border-b border-border/70 p-4 space-y-3">
+      <div className="shrink-0 border-b border-border/80 p-4 space-y-3">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary via-primary/95 to-slate-800 text-primary-foreground shadow-sm ring-1 ring-primary/20">
-            <School className="h-5 w-5 text-white dark:text-foreground" />
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-xs">
+            <School className="h-5 w-5 text-white" />
           </div>
           <div className="flex flex-col overflow-hidden">
             <span className="truncate text-sm font-bold text-foreground font-sans">
@@ -217,16 +217,16 @@ export function AppSidebar({ onItemClick, className }: AppSidebarProps) {
         </div>
 
         {/* Tenant Indicator Badge */}
-        <div className="flex items-center justify-between rounded-lg border border-border/70 bg-muted/40 px-2.5 py-1.5 text-xs">
+        <div className="flex items-center justify-between rounded-md border border-border bg-muted/40 px-2.5 py-1.5 text-xs">
           <div className="flex items-center gap-2 overflow-hidden">
-            <span className="flex h-2 w-2 shrink-0 rounded-full bg-emerald-500 ring-2 ring-emerald-500/20" />
+            <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-600 dark:bg-emerald-400" />
             <span className="truncate font-medium text-foreground text-[11px]">
               আদর্শ সরকারি প্রাথমিক বিদ্যালয়
             </span>
           </div>
-          <Badge variant="outline" className="text-[10px] px-1.5 py-0 shrink-0 font-medium bg-background/80">
+          <span className="text-[10px] px-1.5 py-0.5 rounded shrink-0 font-medium bg-background border border-border text-muted-foreground">
             ঢাকা
-          </Badge>
+          </span>
         </div>
       </div>
 
@@ -286,7 +286,7 @@ export function AppSidebar({ onItemClick, className }: AppSidebarProps) {
                     href={item.href}
                     onClick={onItemClick}
                     className={cn(
-                      "group flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs sm:text-sm font-medium transition-colors duration-150",
+                      "group flex items-center gap-2.5 rounded-md px-3 py-2 text-xs sm:text-sm font-medium transition-colors duration-150",
                       isActive
                         ? "bg-primary text-primary-foreground shadow-xs font-semibold"
                         : "text-muted-foreground hover:bg-accent/80 hover:text-foreground"
@@ -294,7 +294,7 @@ export function AppSidebar({ onItemClick, className }: AppSidebarProps) {
                   >
                     <Icon
                       className={cn(
-                        "h-4 w-4 shrink-0 transition-transform duration-150 group-hover:scale-105",
+                        "h-4 w-4 shrink-0 transition-colors",
                         isActive
                           ? "text-primary-foreground"
                           : "text-muted-foreground group-hover:text-foreground"
@@ -320,12 +320,12 @@ export function AppSidebar({ onItemClick, className }: AppSidebarProps) {
           <DropdownMenuTrigger asChild>
             <button
               type="button"
-              className="flex w-full items-center justify-between gap-3 rounded-lg border border-border/80 bg-background/80 p-2 text-left transition-colors hover:bg-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer shadow-xs"
+              className="flex w-full items-center justify-between gap-3 rounded-md border border-border bg-card p-2 text-left transition-colors hover:bg-muted/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer shadow-2xs"
             >
               <div className="flex items-center gap-2.5 overflow-hidden">
-                <Avatar className="h-8 w-8 shrink-0 ring-1 ring-border">
+                <Avatar className="h-8 w-8 shrink-0 rounded-md ring-1 ring-border">
                   <AvatarImage src="" alt="Admin" />
-                  <AvatarFallback className="bg-primary/10 text-xs font-bold text-primary">
+                  <AvatarFallback className="bg-primary/10 text-xs font-bold text-primary rounded-md">
                     এড
                   </AvatarFallback>
                 </Avatar>
@@ -341,7 +341,7 @@ export function AppSidebar({ onItemClick, className }: AppSidebarProps) {
               <ChevronsUpDown className="h-4 w-4 shrink-0 text-muted-foreground" />
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" side="top" className="w-64 shadow-lg">
+          <DropdownMenuContent align="end" side="top" className="w-64 shadow-md">
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
                 <p className="text-sm font-semibold leading-none">প্রধান শিক্ষক / অ্যাডমিন</p>
@@ -369,15 +369,12 @@ export function AppSidebar({ onItemClick, className }: AppSidebarProps) {
 
         <div className="flex items-center justify-between px-1 text-[11px] text-muted-foreground">
           <div className="flex items-center gap-1.5">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
-            </span>
-            <span className="font-medium">সিস্টেম সক্রিয়</span>
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400" />
+            <span className="font-medium text-foreground">সিস্টেম প্রস্তুত ও সক্রিয়</span>
           </div>
-          <Badge variant="outline" className="text-[10px] font-mono px-1.5 py-0 bg-background/60">
+          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded border border-border bg-card text-muted-foreground">
             v1.0.0
-          </Badge>
+          </span>
         </div>
       </div>
     </aside>
