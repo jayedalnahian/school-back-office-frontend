@@ -4,60 +4,54 @@ import * as React from "react";
 import { Target, Award, CheckCircle2, BookOpen } from "lucide-react";
 import { ModulePageView } from "@/components/layouts/module-view";
 import { Badge } from "@/components/ui/badge";
+import { useLanguage } from "@/i18n";
 
 export default function IndicatorsPage() {
+  const { dict, language } = useLanguage();
+  const m = dict.modules.indicators;
+
   return (
     <ModulePageView
-      title="পারদর্শিতা ও আচরণিক নির্দেশক"
-      englishTitle="Competency Indicators (PI & BI)"
-      description="নতুন যোগ্যতাভিত্তিক শিক্ষাক্রম অনুসারে পারদর্শিতা নির্দেশক (PI) ও আচরণিক নির্দেশক (BI)"
+      title={m.title}
+      englishTitle={language === "bn" ? "Competency Indicators (PI & BI)" : undefined}
+      description={m.subtitle}
       icon={Target}
-      badge="মূল্যায়ন"
-      actionText="নতুন নির্দেশক যুক্ত করুন"
+      badge={m.badge}
+      actionText={m.action}
       stats={[
-        { label: "পারদর্শিতা নির্দেশক (PI)", value: "৪৫ টি", icon: Target },
-        { label: "আচরণিক নির্দেশক (BI)", value: "১০ টি", icon: Award },
-        { label: "মূল্যায়ন মাত্রা", value: "৩ টি", change: "▲ ■ ●", icon: CheckCircle2 },
-        { label: "কারিকুলাম ফ্রেমওয়ার্ক", value: "NCTB", icon: BookOpen },
+        { label: m.stat1, value: language === "bn" ? "৪৫ টি" : "45 PI", icon: Target },
+        { label: m.stat2, value: language === "bn" ? "১০ টি" : "10 BI", icon: Award },
+        { label: m.stat3, value: language === "bn" ? "৩ টি" : "3 Levels", change: "▲ ■ ●", icon: CheckCircle2 },
+        { label: m.stat4, value: "NCTB", icon: BookOpen },
       ]}
-      columns={["নির্দেশক কোড", "বিষয় ও শ্রেণি", "শিখনফল / যোগ্যতা", "নির্দেশকের বিবরণ", "মূল্যায়ন স্তর", "অবস্থা"]}
+      columns={[m.col1, m.col2, m.col3, m.col4, m.col5, m.col6]}
       data={[
         [
           <span key="1" className="font-mono font-bold text-foreground">PI-05.01.01</span>,
-          "বাংলা (৫ম শ্রেণি)",
-          "প্রমিত উচ্চারণে বক্তব্য উপস্থাপন",
-          "পাঠ্যবিষয় ও প্রাসঙ্গিক বিষয়ে স্পষ্ট মতামত ব্যক্ত করতে পারা",
-          "ত্রিভুজ / বৃত্ত / চতুর্ভুজ",
-          <Badge key="status" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">🟢 সক্রিয়</Badge>,
+          language === "bn" ? "বাংলা (৫ম শ্রেণি)" : "Bangla (Class 5)",
+          language === "bn" ? "প্রমিত উচ্চারণে বক্তব্য উপস্থাপন" : "Standard pronunciation",
+          language === "bn" ? "পাঠ্যবিষয় ও প্রাসঙ্গিক বিষয়ে স্পষ্ট মতামত ব্যক্ত করতে পারা" : "Express opinions clearly on curriculum topics",
+          "▲ / ● / ■",
+          <Badge key="status" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">🟢 {dict.common.active}</Badge>,
         ],
         [
           <span key="2" className="font-mono font-bold text-foreground">PI-05.02.01</span>,
-          "English (Class 5)",
+          language === "bn" ? "ইংরেজি (৫ম শ্রেণি)" : "English (Class 5)",
           "Daily situation communication",
           "Can greet, thank and respond politely in English",
-          "ত্রিভুজ / বৃত্ত / চতুর্ভুজ",
-          <Badge key="status" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">🟢 সক্রিয়</Badge>,
+          "▲ / ● / ■",
+          <Badge key="status" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">🟢 {dict.common.active}</Badge>,
         ],
         [
           <span key="3" className="font-mono font-bold text-foreground">PI-05.03.01</span>,
-          "গণিত (৫ম শ্রেণি)",
-          "গাণিতিক সমস্যা সমাধান",
-          "চার প্রক্রিয়া সংশ্লিষ্ট বাস্তব জীবনের সমস্যার সমাধান করতে পারা",
-          "ত্রিভুজ / বৃত্ত / চতুর্ভুজ",
-          <Badge key="status" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">🟢 সক্রিয়</Badge>,
-        ],
-        [
-          <span key="4" className="font-mono font-bold text-foreground">BI-01</span>,
-          "সার্বিক আচরণিক",
-          "সততা ও পারস্পরিক শ্রদ্ধাবোধ",
-          "শ্রেণিকক্ষে সততা বজায় রাখা এবং সহপাঠীদের মতামতের প্রতি শ্রদ্ধা প্রদর্শন",
-          "ত্রিভুজ / বৃত্ত / চতুর্ভুজ",
-          <Badge key="status" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">🟢 সক্রিয়</Badge>,
+          language === "bn" ? "গণিত (৫ম শ্রেণি)" : "Mathematics (Class 5)",
+          language === "bn" ? "গাণিতিক সমস্যা সমাধান" : "Problem Solving",
+          language === "bn" ? "চার প্রক্রিয়া সংশ্লিষ্ট বাস্তব জীবনের সমস্যার সমাধান করতে পারা" : "Solve four operations real life problems",
+          "▲ / ● / ■",
+          <Badge key="status" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">🟢 {dict.common.active}</Badge>,
         ],
       ]}
-      searchPlaceholder="নির্দেশক কোড, বিষয় বা শিখনফল দিয়ে খুঁজুন..."
-      notice="শিক্ষার্থীদের শিখন অগ্রগতি মূল্যায়নে তিনটি সূচক ব্যবহার করা হয়: প্রারম্ভিক স্তর (চতুর্ভুজ ■), অন্তর্বর্তী স্তর (বৃত্ত ●) এবং পারদর্শী স্তর (ত্রিভুজ ▲)।"
+      notice={m.notice}
     />
   );
 }
-

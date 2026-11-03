@@ -50,7 +50,9 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { ThemeToggle } from "./theme-toggle";
+import { LanguageSwitcher } from "./language-switcher";
 import { useSidebar } from "./sidebar-context";
+import { useLanguage, type Dictionary } from "@/i18n";
 
 export interface SubNavItem {
   title: string;
@@ -71,169 +73,171 @@ export interface NavGroup {
   items: NavItem[];
 }
 
-export const navigationGroups: NavGroup[] = [
-  {
-    label: "ওভারভিউ",
-    items: [
-      {
-        title: "ড্যাশবোর্ড",
-        href: "/dashboard",
-        icon: LayoutDashboard,
-        children: [
-          { title: "প্রধান ড্যাশবোর্ড", href: "/dashboard" },
-          { title: "পরিসংখ্যান ও অ্যানালিটিক্স", href: "/dashboard#analytics" },
-          { title: "সাম্প্রতিক নোটিশ ও কার্যক্রম", href: "/dashboard#activities" },
-        ],
-      },
-    ],
-  },
-  {
-    label: "প্রতিষ্ঠান ও প্রশাসন",
-    items: [
-      {
-        title: "বিদ্যালয় ব্যবস্থাপনা",
-        href: "/schools",
-        icon: Building2,
-        children: [
-          { title: "সকল বিদ্যালয় তালিকা", href: "/schools" },
-          { title: "নতুন বিদ্যালয় অনবোর্ডিং", href: "/schools/onboard", badge: "নতুন" },
-          { title: "সক্রিয় বিদ্যালয়সমূহ", href: "/schools?status=active" },
-        ],
-      },
-      {
-        title: "ইউজার ও নিরাপত্তা",
-        href: "/users",
-        icon: Users,
-        children: [
-          { title: "সকল ব্যবহারকারী", href: "/users" },
-          { title: "অ্যাডমিন ও সুপারভাইজার", href: "/users?role=admin" },
-          { title: "রোল ও পারমিশন কন্ট্রোল", href: "/users?tab=roles" },
-        ],
-      },
-    ],
-  },
-  {
-    label: "একাডেমিক কাঠামো",
-    items: [
-      {
-        title: "শিক্ষাবর্ষ ও শিফট",
-        href: "/academic-years",
-        icon: Calendar,
-        children: [
-          { title: "শিক্ষাবর্ষ তালিকা", href: "/academic-years" },
-          { title: "শিফট ও সময়সূচি", href: "/shifts" },
-        ],
-      },
-      {
-        title: "শ্রেণি ও শাখা",
-        href: "/classes",
-        icon: GraduationCap,
-        children: [
-          { title: "শ্রেণি ব্যবস্থাপনা ও ক্যাপাসিটি", href: "/classes" },
-          { title: "শাখা ও সেকশন বিন্যাস", href: "/sections" },
-        ],
-      },
-      {
-        title: "বিষয় ও পাঠ্যক্রম",
-        href: "/subjects",
-        icon: BookOpen,
-        children: [
-          { title: "সকল পাঠ্যবিষয়", href: "/subjects" },
-          { title: "জাতীয় কারিকুলাম ও সিলেবাস", href: "/subjects?tab=curriculum" },
-        ],
-      },
-    ],
-  },
-  {
-    label: "স্টেকহোল্ডার",
-    items: [
-      {
-        title: "শিক্ষকমণ্ডলী",
-        href: "/teachers",
-        icon: UserCheck,
-        children: [
-          { title: "শিক্ষক তালিকা ও প্রোফাইল", href: "/teachers" },
-          { title: "পদবি ও দায়িত্ব বণ্টন", href: "/teachers?tab=designations" },
-        ],
-      },
-      {
-        title: "শিক্ষার্থীবৃন্দ",
-        href: "/students",
-        icon: UserRound,
-        children: [
-          { title: "শিক্ষার্থী তালিকা", href: "/students" },
-          { title: "নতুন শিক্ষার্থী ভর্তি ও রোল", href: "/enrollments" },
-        ],
-      },
-      {
-        title: "অভিভাবকবৃন্দ",
-        href: "/guardians",
-        icon: HeartHandshake,
-        children: [
-          { title: "অভিভাবক ডিরেক্টরি", href: "/guardians" },
-          { title: "জরুরি যোগাযোগ ও বার্তা", href: "/guardians?tab=sms" },
-        ],
-      },
-    ],
-  },
-  {
-    label: "দৈনন্দিন কার্যক্রম",
-    items: [
-      {
-        title: "ক্লাস রুটিন",
-        href: "/routines",
-        icon: CalendarDays,
-        children: [
-          { title: "সাপ্তাহিক ক্লাস রুটিন", href: "/routines" },
-          { title: "শিক্ষকভিত্তিক রুটিন", href: "/routines?view=teachers" },
-        ],
-      },
-      {
-        title: "ভর্তি ও রেজিস্ট্রেশন",
-        href: "/enrollments",
-        icon: ClipboardList,
-        children: [
-          { title: "ভর্তি তালিকা ও রোল নম্বর", href: "/enrollments" },
-          { title: "স্থানান্তর ও ছাড়পত্র (TC)", href: "/enrollments?tab=transfer" },
-        ],
-      },
-      {
-        title: "দৈনিক উপস্থিতি ও হাজিরা",
-        href: "/attendances",
-        icon: CheckSquare,
-        children: [
-          { title: "শিক্ষার্থী ডিজিটাল হাজিরা", href: "/attendances" },
-          { title: "শিক্ষক ও কর্মকর্তা হাজিরা", href: "/attendances?type=teachers" },
-          { title: "মাসিক উপস্থিতি সারসংক্ষেপ", href: "/attendances?tab=reports" },
-        ],
-      },
-    ],
-  },
-  {
-    label: "মূল্যায়ন ও ফলাফল",
-    items: [
-      {
-        title: "পারদর্শিতা নির্দেশক",
-        href: "/indicators",
-        icon: Target,
-        children: [
-          { title: "পারদর্শিতা নির্দেশক (PI)", href: "/indicators" },
-          { title: "আচরণিক নির্দেশক (BI)", href: "/indicators?type=bi" },
-        ],
-      },
-      {
-        title: "মূল্যায়ন ও ফলাফল",
-        href: "/evaluations",
-        icon: Award,
-        children: [
-          { title: "ধারাবাহিক মূল্যায়ন", href: "/evaluations" },
-          { title: "সামষ্টিক ও চূড়ান্ত মূল্যায়ন", href: "/evaluations?type=summative" },
-          { title: "ট্রান্সক্রিপ্ট ও প্রগ্রেস কার্ড", href: "/evaluations?tab=cards" },
-        ],
-      },
-    ],
-  },
-];
+export function getNavigationGroups(dict: Dictionary): NavGroup[] {
+  return [
+    {
+      label: dict.nav.overview,
+      items: [
+        {
+          title: dict.nav.dashboard,
+          href: "/dashboard",
+          icon: LayoutDashboard,
+          children: [
+            { title: dict.nav.mainDashboard, href: "/dashboard" },
+            { title: dict.nav.analyticsMetrics, href: "/dashboard#analytics" },
+            { title: dict.nav.recentActivities, href: "/dashboard#activities" },
+          ],
+        },
+      ],
+    },
+    {
+      label: dict.nav.institution,
+      items: [
+        {
+          title: dict.nav.schoolsManagement,
+          href: "/schools",
+          icon: Building2,
+          children: [
+            { title: dict.nav.allSchools, href: "/schools" },
+            { title: dict.nav.onboardSchool, href: "/schools/onboard", badge: dict.nav.badgeNew },
+            { title: dict.nav.activeSchools, href: "/schools?status=active" },
+          ],
+        },
+        {
+          title: dict.nav.usersSecurity,
+          href: "/users",
+          icon: Users,
+          children: [
+            { title: dict.nav.allUsers, href: "/users" },
+            { title: dict.nav.adminsSupervisors, href: "/users?role=admin" },
+            { title: dict.nav.rolesPermissions, href: "/users?tab=roles" },
+          ],
+        },
+      ],
+    },
+    {
+      label: dict.nav.academicSetup,
+      items: [
+        {
+          title: dict.nav.academicYearsShifts,
+          href: "/academic-years",
+          icon: Calendar,
+          children: [
+            { title: dict.nav.academicYearsList, href: "/academic-years" },
+            { title: dict.nav.shiftsTiming, href: "/shifts" },
+          ],
+        },
+        {
+          title: dict.nav.classesSections,
+          href: "/classes",
+          icon: GraduationCap,
+          children: [
+            { title: dict.nav.classesManagement, href: "/classes" },
+            { title: dict.nav.sectionsStreams, href: "/sections" },
+          ],
+        },
+        {
+          title: dict.nav.subjectsCurriculum,
+          href: "/subjects",
+          icon: BookOpen,
+          children: [
+            { title: dict.nav.allSubjects, href: "/subjects" },
+            { title: dict.nav.nationalCurriculum, href: "/subjects?tab=curriculum" },
+          ],
+        },
+      ],
+    },
+    {
+      label: dict.nav.stakeholders,
+      items: [
+        {
+          title: dict.nav.teachers,
+          href: "/teachers",
+          icon: UserCheck,
+          children: [
+            { title: dict.nav.teachersList, href: "/teachers" },
+            { title: dict.nav.designationsRoles, href: "/teachers?tab=designations" },
+          ],
+        },
+        {
+          title: dict.nav.students,
+          href: "/students",
+          icon: UserRound,
+          children: [
+            { title: dict.nav.studentsList, href: "/students" },
+            { title: dict.nav.newEnrollmentRoll, href: "/enrollments" },
+          ],
+        },
+        {
+          title: dict.nav.guardians,
+          href: "/guardians",
+          icon: HeartHandshake,
+          children: [
+            { title: dict.nav.guardiansDirectory, href: "/guardians" },
+            { title: dict.nav.emergencyContactSms, href: "/guardians?tab=sms" },
+          ],
+        },
+      ],
+    },
+    {
+      label: dict.nav.dailyOperations,
+      items: [
+        {
+          title: dict.nav.classRoutines,
+          href: "/routines",
+          icon: CalendarDays,
+          children: [
+            { title: dict.nav.weeklyRoutine, href: "/routines" },
+            { title: dict.nav.teacherRoutines, href: "/routines?view=teachers" },
+          ],
+        },
+        {
+          title: dict.nav.enrollmentsRegistration,
+          href: "/enrollments",
+          icon: ClipboardList,
+          children: [
+            { title: dict.nav.enrollmentList, href: "/enrollments" },
+            { title: dict.nav.transfersTc, href: "/enrollments?tab=transfer" },
+          ],
+        },
+        {
+          title: dict.nav.dailyAttendance,
+          href: "/attendances",
+          icon: CheckSquare,
+          children: [
+            { title: dict.nav.studentAttendance, href: "/attendances" },
+            { title: dict.nav.teacherAttendance, href: "/attendances?type=teachers" },
+            { title: dict.nav.monthlySummary, href: "/attendances?tab=reports" },
+          ],
+        },
+      ],
+    },
+    {
+      label: dict.nav.evaluationResults,
+      items: [
+        {
+          title: dict.nav.competencyIndicators,
+          href: "/indicators",
+          icon: Target,
+          children: [
+            { title: dict.nav.performanceIndicators, href: "/indicators" },
+            { title: dict.nav.behavioralIndicators, href: "/indicators?type=bi" },
+          ],
+        },
+        {
+          title: dict.nav.evaluations,
+          href: "/evaluations",
+          icon: Award,
+          children: [
+            { title: dict.nav.continuousEvaluation, href: "/evaluations" },
+            { title: dict.nav.summativeEvaluation, href: "/evaluations?type=summative" },
+            { title: dict.nav.progressCards, href: "/evaluations?tab=cards" },
+          ],
+        },
+      ],
+    },
+  ];
+}
 
 interface AppSidebarProps {
   onItemClick?: () => void;
@@ -244,12 +248,15 @@ interface AppSidebarProps {
 export function AppSidebar({ onItemClick, className, isMobile = false }: AppSidebarProps) {
   const pathname = usePathname();
   const { isCollapsed: contextCollapsed, toggleCollapse } = useSidebar();
+  const { dict } = useLanguage();
   
   // When displayed inside mobile sheet, sidebar is never collapsed
   const isCollapsed = isMobile ? false : contextCollapsed;
 
   const [searchQuery, setSearchQuery] = React.useState("");
   const [openDropdowns, setOpenDropdowns] = React.useState<Record<string, boolean>>({});
+
+  const navigationGroups = React.useMemo(() => getNavigationGroups(dict), [dict]);
 
   // Clean current pathname without search queries or hash
   const currentPath = React.useMemo(() => {
@@ -274,7 +281,7 @@ export function AppSidebar({ onItemClick, className, isMobile = false }: AppSide
         }
       });
     });
-  }, [currentPath]);
+  }, [currentPath, navigationGroups]);
 
   const toggleDropdown = (itemTitle: string) => {
     setOpenDropdowns((prev) => ({
@@ -300,7 +307,7 @@ export function AppSidebar({ onItemClick, className, isMobile = false }: AppSide
         }),
       }))
       .filter((group) => group.items.length > 0);
-  }, [searchQuery]);
+  }, [searchQuery, navigationGroups]);
 
   return (
     <TooltipProvider delayDuration={100}>
@@ -326,10 +333,10 @@ export function AppSidebar({ onItemClick, className, isMobile = false }: AppSide
               {!isCollapsed && (
                 <div className="flex flex-col overflow-hidden">
                   <span className="truncate text-sm font-bold text-foreground font-sans">
-                    প্রাথমিক বিদ্যালয় ব্যাক-অফিস
+                    {dict.common.appTitle}
                   </span>
                   <span className="truncate text-[10px] text-muted-foreground font-medium">
-                    Primary School Administration
+                    {dict.common.appSubtitle}
                   </span>
                 </div>
               )}
@@ -346,7 +353,7 @@ export function AppSidebar({ onItemClick, className, isMobile = false }: AppSide
                   "h-8 w-8 rounded-lg text-muted-foreground hover:bg-accent hover:text-foreground transition-colors shrink-0",
                   isCollapsed ? "mt-1" : "hidden sm:flex"
                 )}
-                title={isCollapsed ? "সাইডবার বড় করুন (Ctrl+B)" : "সাইডবার ছোট করুন (Ctrl+B)"}
+                title={isCollapsed ? "Expand Sidebar (Ctrl+B)" : "Collapse Sidebar (Ctrl+B)"}
                 aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
               >
                 {isCollapsed ? (
@@ -364,11 +371,11 @@ export function AppSidebar({ onItemClick, className, isMobile = false }: AppSide
               <div className="flex items-center gap-2 overflow-hidden">
                 <span className="h-2 w-2 shrink-0 rounded-full bg-emerald-600 dark:bg-emerald-400 animate-pulse" />
                 <span className="truncate font-semibold text-foreground text-[11px]">
-                  আদর্শ সরকারি প্রাথমিক বিদ্যালয়
+                  {dict.nav.tenantSchoolName}
                 </span>
               </div>
               <span className="text-[10px] px-1.5 py-0.5 rounded shrink-0 font-medium bg-background border border-border text-muted-foreground">
-                ঢাকা
+                {dict.nav.tenantRegion}
               </span>
             </div>
           )}
@@ -383,7 +390,7 @@ export function AppSidebar({ onItemClick, className, isMobile = false }: AppSide
                 type="search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="মডিউল খুঁজুন..."
+                placeholder={dict.common.searchPlaceholder}
                 className="h-8.5 w-full pl-8 pr-12 text-xs bg-background/80 placeholder:text-muted-foreground/70 rounded-lg border-border/70 focus-visible:border-primary/50"
               />
               <kbd className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 flex h-5 select-none items-center gap-0.5 rounded border border-border bg-muted/60 px-1 font-mono text-[10px] font-medium text-muted-foreground">
@@ -392,39 +399,94 @@ export function AppSidebar({ onItemClick, className, isMobile = false }: AppSide
             </div>
 
             <div className="flex items-center justify-between px-1">
-              <span className="text-[11px] font-medium text-muted-foreground">কুইক কন্ট্রোলস</span>
+              <span className="text-[11px] font-medium text-muted-foreground">{dict.common.quickControls}</span>
               <div className="flex items-center gap-1.5">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="relative h-7.5 w-7.5 rounded-lg border-border/80 bg-background/80 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-                  aria-label="বিজ্ঞপ্তি"
-                  title="বিজ্ঞপ্তি"
-                >
-                  <Bell className="h-3.5 w-3.5" />
-                  <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-emerald-500 ring-2 ring-background" />
-                </Button>
+                {/* Language Switcher right next to Notification button */}
+                <LanguageSwitcher />
+
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="relative h-7.5 w-7.5 rounded-lg border-border/80 bg-background/80 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                      aria-label={dict.common.notifications}
+                      title={dict.common.notifications}
+                    >
+                      <Bell className="h-3.5 w-3.5" />
+                      <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-emerald-500 ring-2 ring-background" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-72 p-2 shadow-lg border-border/80">
+                    <DropdownMenuLabel className="text-xs font-bold flex items-center justify-between px-1 pb-1">
+                      <span>{dict.dashboard.latestNotices}</span>
+                      <Badge variant="outline" className="text-[10px] bg-emerald-500/10 text-emerald-600 font-semibold">
+                        2 {dict.modules.academicYears.badge}
+                      </Badge>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <div className="space-y-1 py-1">
+                      <div className="rounded-md p-2 hover:bg-muted/50 transition-colors cursor-pointer text-xs space-y-0.5">
+                        <div className="flex items-center justify-between text-[10px] text-muted-foreground">
+                          <span className="font-semibold text-blue-600 dark:text-blue-400">{dict.dashboard.academicTag}</span>
+                          <span>{dict.dashboard.timeToday}</span>
+                        </div>
+                        <p className="font-medium text-foreground text-xs leading-snug line-clamp-1">
+                          {dict.dashboard.notice1Title}
+                        </p>
+                      </div>
+                      <div className="rounded-md p-2 hover:bg-muted/50 transition-colors cursor-pointer text-xs space-y-0.5">
+                        <div className="flex items-center justify-between text-[10px] text-muted-foreground">
+                          <span className="font-semibold text-emerald-600 dark:text-emerald-400">{dict.dashboard.admissionTag}</span>
+                          <span>{dict.dashboard.timeYesterday}</span>
+                        </div>
+                        <p className="font-medium text-foreground text-xs leading-snug line-clamp-1">
+                          {dict.dashboard.notice2Title}
+                        </p>
+                      </div>
+                    </div>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
                 <ThemeToggle />
               </div>
             </div>
           </div>
         ) : (
-          <div className="shrink-0 border-b border-border/70 p-2 flex flex-col items-center gap-2">
-            <Tooltip>
-              <TooltipTrigger asChild>
+          <div className="shrink-0 border-b border-border/70 p-2 flex flex-col items-center gap-1.5">
+            <LanguageSwitcher isCollapsed />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
                 <Button
-                  variant="ghost"
+                  variant="outline"
                   size="icon"
-                  onClick={toggleCollapse}
-                  className="h-8 w-8 rounded-lg text-muted-foreground hover:bg-accent hover:text-foreground"
+                  className="relative h-8 w-8 rounded-lg border-border/80 bg-background/80 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                  aria-label={dict.common.notifications}
+                  title={dict.common.notifications}
                 >
-                  <Search className="h-4 w-4" />
+                  <Bell className="h-3.5 w-3.5" />
+                  <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-emerald-500 ring-2 ring-background" />
                 </Button>
-              </TooltipTrigger>
-              <TooltipContent side="right">
-                <p>মডিউল খুঁজুন (প্রসারিত করতে ক্লিক করুন)</p>
-              </TooltipContent>
-            </Tooltip>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent side="right" className="w-72 p-2 shadow-lg border-border/80">
+                <DropdownMenuLabel className="text-xs font-bold flex items-center justify-between px-1 pb-1">
+                  <span>{dict.dashboard.latestNotices}</span>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <div className="space-y-1 py-1">
+                  <div className="rounded-md p-2 hover:bg-muted/50 transition-colors cursor-pointer text-xs space-y-0.5">
+                    <div className="flex items-center justify-between text-[10px] text-muted-foreground">
+                      <span className="font-semibold text-blue-600 dark:text-blue-400">{dict.dashboard.academicTag}</span>
+                      <span>{dict.dashboard.timeToday}</span>
+                    </div>
+                    <p className="font-medium text-foreground text-xs leading-snug line-clamp-1">
+                      {dict.dashboard.notice1Title}
+                    </p>
+                  </div>
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <ThemeToggle />
           </div>
         )}
 
@@ -606,7 +668,7 @@ export function AppSidebar({ onItemClick, className, isMobile = false }: AppSide
                                 toggleDropdown(item.title);
                               }}
                               className="p-1 rounded hover:bg-accent/80 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-                              title="সাবমেনু ড্রপডাউন টগল করুন"
+                              title="Toggle Submenu"
                             >
                               <ChevronDown
                                 className={cn(
@@ -714,7 +776,7 @@ export function AppSidebar({ onItemClick, className, isMobile = false }: AppSide
 
           {filteredGroups.length === 0 && (
             <div className="py-8 text-center text-xs text-muted-foreground">
-              কোনো মডিউল পাওয়া যায়নি
+              {dict.common.noRecordsFound}
             </div>
           )}
         </div>
@@ -741,13 +803,13 @@ export function AppSidebar({ onItemClick, className, isMobile = false }: AppSide
                   <Avatar className="h-8 w-8 shrink-0 rounded-md ring-1 ring-border">
                     <AvatarImage src="" alt="Admin" />
                     <AvatarFallback className="bg-primary/10 text-xs font-bold text-primary rounded-md">
-                      এড
+                      AD
                     </AvatarFallback>
                   </Avatar>
                   {!isCollapsed && (
                     <div className="flex flex-col overflow-hidden">
                       <span className="truncate text-xs font-semibold text-foreground">
-                        প্রধান শিক্ষক / অ্যাডমিন
+                        {dict.common.userRoleAdmin}
                       </span>
                       <span className="truncate text-[10px] text-muted-foreground">
                         admin@school.gov.bd
@@ -766,23 +828,23 @@ export function AppSidebar({ onItemClick, className, isMobile = false }: AppSide
             >
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-semibold leading-none">প্রধান শিক্ষক / অ্যাডমিন</p>
+                  <p className="text-sm font-semibold leading-none">{dict.common.userRoleAdmin}</p>
                   <p className="text-xs text-muted-foreground leading-none">admin@school.gov.bd</p>
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem className="gap-2 cursor-pointer text-xs">
                 <User className="h-4 w-4 text-muted-foreground" />
-                <span>প্রোফাইল সেটিংস</span>
+                <span>{dict.common.profileSettings}</span>
               </DropdownMenuItem>
               <DropdownMenuItem className="gap-2 cursor-pointer text-xs">
                 <Settings className="h-4 w-4 text-muted-foreground" />
-                <span>প্রতিষ্ঠান কনফিগারেশন</span>
+                <span>{dict.common.institutionConfig}</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem className="gap-2 cursor-pointer text-xs text-destructive focus:text-destructive">
                 <LogOut className="h-4 w-4" />
-                <span>লগআউট</span>
+                <span>{dict.common.logout}</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -804,7 +866,7 @@ export function AppSidebar({ onItemClick, className, isMobile = false }: AppSide
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="right">
-                  <p>সাইডবার বড় করুন (Ctrl+B)</p>
+                  <p>Expand Sidebar (Ctrl+B)</p>
                 </TooltipContent>
               </Tooltip>
             </div>
@@ -812,11 +874,11 @@ export function AppSidebar({ onItemClick, className, isMobile = false }: AppSide
             <div className="flex items-center justify-between px-1 text-[11px] text-muted-foreground pt-0.5">
               <div className="flex items-center gap-1.5">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400" />
-                <span className="font-medium text-foreground">সিস্টেম সক্রিয়</span>
+                <span className="font-medium text-foreground">{dict.common.systemActive}</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="text-[10px] font-mono px-1.5 py-0.5 rounded border border-border bg-card text-muted-foreground">
-                  v1.0.0
+                  {dict.common.systemVersion}
                 </span>
                 {!isMobile && (
                   <Button
@@ -825,7 +887,7 @@ export function AppSidebar({ onItemClick, className, isMobile = false }: AppSide
                     size="icon"
                     onClick={toggleCollapse}
                     className="h-6 w-6 rounded text-muted-foreground hover:text-foreground hover:bg-muted"
-                    title="সাইডবার ছোট করুন (Ctrl+B)"
+                    title="Collapse Sidebar (Ctrl+B)"
                   >
                     <PanelLeftClose className="h-3.5 w-3.5" />
                   </Button>

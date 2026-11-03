@@ -4,51 +4,60 @@ import * as React from "react";
 import { HeartHandshake, Phone, MessageSquare } from "lucide-react";
 import { ModulePageView } from "@/components/layouts/module-view";
 import { Badge } from "@/components/ui/badge";
+import { useLanguage } from "@/i18n";
 
 export default function GuardiansPage() {
+  const { dict, language } = useLanguage();
+  const m = dict.modules.guardians;
+
   return (
     <ModulePageView
-      title="অভিভাবকবৃন্দ ও জরুরি যোগাযোগ"
-      englishTitle="Guardians Directory"
-      description="শিক্ষার্থীদের পিতা, মাতা ও দায়িত্বপ্রাপ্ত স্থানীয় অভিভাবকদের ডিরেক্টরি"
+      title={m.title}
+      englishTitle={language === "bn" ? "Guardians Directory" : undefined}
+      description={m.subtitle}
       icon={HeartHandshake}
-      badge="স্টেকহোল্ডার"
-      actionText="নতুন অভিভাবক এন্ট্রি"
+      badge={m.badge}
+      actionText={m.action}
       stats={[
-        { label: "নিবন্ধিত অভিভাবক", value: "৬৫০ জন", icon: HeartHandshake },
-        { label: "সক্রিয় মোবাইল সংযোগ", value: "৬৫০ টি", icon: Phone },
-        { label: "এসএমএস বিজ্ঞপ্তি প্রেরিত", value: "১,২৫০ টি", icon: MessageSquare },
-        { label: "অভিভাবক সমাবেশ হার", value: "৮৮%", change: "সর্বশেষ সমাবেশ" },
+        { label: m.stat1, value: language === "bn" ? "৬৫০ জন" : "650 Guardians", icon: HeartHandshake },
+        { label: m.stat2, value: language === "bn" ? "৬৫০ টি" : "650 Active", icon: Phone },
+        { label: m.stat3, value: language === "bn" ? "১,২৫০ টি" : "1,250 SMS", icon: MessageSquare },
+        { label: m.stat4, value: "88%", change: language === "bn" ? "সর্বশেষ সমাবেশ" : "Last Meeting" },
       ]}
-      columns={["অভিভাবকের নাম", "সম্পর্ক", "শিক্ষার্থীর নাম ও শ্রেণি", "মোবাইল নম্বর", "পেশা ও ঠিকানা", "যাচাই স্ট্যাটাস"]}
+      columns={[m.col1, m.col2, m.col3, m.col4, m.col5, m.col6]}
       data={[
         [
-          <span key="1" className="font-semibold text-foreground">মোঃ আনোয়ার হোসেন</span>,
-          "পিতা",
-          "আহসান হাবীব (পঞ্চম শ্রেণি)",
+          <span key="1" className="font-semibold text-foreground">
+            {language === "bn" ? "মোঃ আনোয়ার হোসেন" : "Md. Anwar Hossain"}
+          </span>,
+          language === "bn" ? "পিতা" : "Father",
+          language === "bn" ? "আহসান হাবীব (পঞ্চম শ্রেণি)" : "Ahsan Habib (Class 5)",
           "01711223344",
-          "ব্যবসায়ী, ধানমন্ডি আ/এ",
-          <Badge key="status" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">🟢 ভেরিফাইড</Badge>,
+          language === "bn" ? "ব্যবসায়ী, ধানমন্ডি আ/এ" : "Businessman, Dhanmondi",
+          <Badge key="status" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">🟢 {dict.common.verified}</Badge>,
         ],
         [
-          <span key="2" className="font-semibold text-foreground">মোসাঃ রাবেয়া বসরী</span>,
-          "মাতা",
-          "ফাতিমা তুজ জোহরা (পঞ্চম শ্রেণি)",
+          <span key="2" className="font-semibold text-foreground">
+            {language === "bn" ? "মোসাঃ রাবেয়া বসরী" : "Rabeya Basri"}
+          </span>,
+          language === "bn" ? "মাতা" : "Mother",
+          language === "bn" ? "ফাতিমা তুজ জোহরা (পঞ্চম শ্রেণি)" : "Fatima Tuz Zohra (Class 5)",
           "01811223344",
-          "গৃহিণী, লালমাটিয়া",
-          <Badge key="status" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">🟢 ভেরিফাইড</Badge>,
+          language === "bn" ? "গৃহিণী, লালমাটিয়া" : "Homemaker, Lalmatia",
+          <Badge key="status" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">🟢 {dict.common.verified}</Badge>,
         ],
         [
-          <span key="3" className="font-semibold text-foreground">মোঃ মোস্তফা কামাল</span>,
-          "পিতা",
-          "তানভীর আহমেদ (প্রথম শ্রেণি)",
+          <span key="3" className="font-semibold text-foreground">
+            {language === "bn" ? "মোঃ মোস্তফা কামাল" : "Md. Mostafa Kamal"}
+          </span>,
+          language === "bn" ? "পিতা" : "Father",
+          language === "bn" ? "তানভীর আহমেদ (প্রথম শ্রেণি)" : "Tanvir Ahmed (Class 1)",
           "01911223344",
-          "চাকরিজীবী, কলাবাগান",
-          <Badge key="status" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">🟢 ভেরিফাইড</Badge>,
+          language === "bn" ? "চাকরিজীবী, কলাবাগান" : "Service, Kalabagan",
+          <Badge key="status" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">🟢 {dict.common.verified}</Badge>,
         ],
       ]}
-      searchPlaceholder="অভিভাবকের নাম বা মোবাইল নম্বর দিয়ে খুঁজুন..."
-      notice="শিক্ষার্থীর অনুপস্থিতি, জরুরি ছুটি বা পরীক্ষার ফলাফল সংক্রান্ত সকল অফিশিয়াল নোটিফিকেশন এই মোবাইল নম্বরে স্বয়ংক্রিয়ভাবে প্রেরিত হবে।"
+      notice={m.notice}
     />
   );
 }

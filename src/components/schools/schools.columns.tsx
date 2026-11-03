@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
 import { format } from "date-fns";
 import {
   MoreHorizontal,
@@ -34,9 +33,37 @@ import {
   type SortOrder,
 } from "@/components/data-table";
 import type { SchoolRecord } from "./schools.types";
+import type { Dictionary, Language } from "@/i18n";
 
 /**
- * Filter configurations for faceted filtering in the schools DataTable
+ * Filter configurations generator for faceted filtering in the schools DataTable
+ */
+export function getSchoolFilterConfigs(dict: Dictionary): DataTableFilterConfig[] {
+  return [
+    {
+      key: "type",
+      label: dict.schools.typeCol,
+      type: "multi-select",
+      options: [
+        { label: dict.schools.filterGovt, value: "government" },
+        { label: dict.schools.filterSemiGovt, value: "semi_government" },
+        { label: dict.schools.filterPrivate, value: "private" },
+      ],
+    },
+    {
+      key: "status",
+      label: dict.schools.statusCol,
+      type: "select",
+      options: [
+        { label: dict.schools.filterActive, value: "active" },
+        { label: dict.schools.filterInactive, value: "inactive" },
+      ],
+    },
+  ];
+}
+
+/**
+ * Static fallback filter configs for backwards compatibility
  */
 export const schoolFilterConfigs: DataTableFilterConfig[] = [
   {
@@ -61,6 +88,9 @@ export const schoolFilterConfigs: DataTableFilterConfig[] = [
 ];
 
 interface GetSchoolColumnsOptions {
+  dict?: Dictionary;
+  language?: Language;
+  formatNumber?: (val: number | string) => string;
   sortBy?: string | null;
   sortOrder?: SortOrder | null;
   onSortChange?: (field: string | null, order: SortOrder | null) => void;
@@ -72,19 +102,30 @@ interface GetSchoolColumnsOptions {
  * Generates table column definitions with sorting, badging, and contextual action menu
  */
 export function getSchoolColumns({
+  dict,
+  language = "en",
+  formatNumber = (v) => String(v),
   sortBy,
   sortOrder,
   onSortChange,
   onDelete,
   onEdit,
 }: GetSchoolColumnsOptions): DataTableColumnDef<SchoolRecord>[] {
+  const codeTitle = dict?.schools.codeCol ?? (language === "bn" ? "কোড" : "Code");
+  const nameTitle = dict?.schools.nameCol ?? (language === "bn" ? "বিদ্যালয়ের নাম" : "School Name");
+  const typeTitle = dict?.schools.typeCol ?? (language === "bn" ? "ধরন" : "Type");
+  const contactTitle = dict?.schools.contactCol ?? (language === "bn" ? "যোগাযোগ" : "Contact");
+  const studentsTitle = dict?.dashboard.totalStudents ?? (language === "bn" ? "মোট শিক্ষার্থী" : "Total Students");
+  const statusTitle = dict?.schools.statusCol ?? (language === "bn" ? "অবস্থা" : "Status");
+  const createdTitle = dict?.schools.createdAtCol ?? (language === "bn" ? "অনবোর্ডিং তারিখ" : "Onboarding Date");
+
   return [
     {
       accessorKey: "code",
       header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
-          title="কোড"
+          title={codeTitle}
           sortBy={sortBy}
           sortOrder={sortOrder}
           onSortChange={onSortChange}
@@ -101,7 +142,7 @@ export function getSchoolColumns({
       header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
-          title="বিদ্যালয়ের নাম"
+          title={nameTitle}
           sortBy={sortBy}
           sortOrder={sortOrder}
           onSortChange={onSortChange}
@@ -127,7 +168,7 @@ export function getSchoolColumns({
       header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
-          title="ধরন"
+          title={typeTitle}
           sortBy={sortBy}
           sortOrder={sortOrder}
           onSortChange={onSortChange}
@@ -139,9 +180,18 @@ export function getSchoolColumns({
           SchoolRecord["type"],
           { label: string; variant: "default" | "secondary" | "outline" }
         > = {
-          government: { label: "সরকারি (Govt)", variant: "default" },
-          semi_government: { label: "আধা-সরকারি (Semi Govt)", variant: "secondary" },
-          private: { label: "বেসরকারি (Private)", variant: "outline" },
+          government: {
+            label: dict?.schools.filterGovt ?? (language === "bn" ? "সরকারি (Govt)" : "Government"),
+            variant: "default",
+          },
+          semi_government: {
+            label: dict?.schools.filterSemiGovt ?? (language === "bn" ? "আধা-সরকারি (Semi Govt)" : "Semi-Government"),
+            variant: "secondary",
+          },
+          private: {
+            label: dict?.schools.filterPrivate ?? (language === "bn" ? "বেসরকারি (Private)" : "Private"),
+            variant: "outline",
+          },
         };
         const config = typeConfig[type] ?? { label: type, variant: "outline" };
         return (
@@ -156,7 +206,7 @@ export function getSchoolColumns({
       header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
-          title="যোগাযোগ"
+          title={contactTitle}
           sortBy={sortBy}
           sortOrder={sortOrder}
           onSortChange={onSortChange}
@@ -183,7 +233,7 @@ export function getSchoolColumns({
       header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
-          title="মোট শিক্ষার্থী"
+          title={studentsTitle}
           sortBy={sortBy}
           sortOrder={sortOrder}
           onSortChange={onSortChange}
@@ -191,7 +241,7 @@ export function getSchoolColumns({
       ),
       cell: ({ row }) => (
         <span className="font-semibold text-xs tabular-nums text-foreground">
-          {row.original.total_students.toLocaleString()}
+          {formatNumber(row.original.total_students.toLocaleString())}
         </span>
       ),
     },
@@ -200,7 +250,7 @@ export function getSchoolColumns({
       header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
-          title="অবস্থা"
+          title={statusTitle}
           sortBy={sortBy}
           sortOrder={sortOrder}
           onSortChange={onSortChange}
@@ -214,7 +264,7 @@ export function getSchoolColumns({
             className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 text-[11px] font-normal gap-1"
           >
             <CheckCircle2 className="h-3 w-3" />
-            সক্রিয়
+            {dict?.common.active ?? "Active"}
           </Badge>
         ) : (
           <Badge
@@ -222,7 +272,7 @@ export function getSchoolColumns({
             className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20 text-[11px] font-normal gap-1"
           >
             <XCircle className="h-3 w-3" />
-            নিষ্ক্রিয়
+            {dict?.common.inactive ?? "Inactive"}
           </Badge>
         );
       },
@@ -232,7 +282,7 @@ export function getSchoolColumns({
       header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
-          title="অনবোর্ডিং তারিখ"
+          title={createdTitle}
           sortBy={sortBy}
           sortOrder={sortOrder}
           onSortChange={onSortChange}
@@ -258,19 +308,6 @@ export function getSchoolColumns({
         const school = row.original;
         return (
           <div className="flex items-center justify-end gap-1">
-            {/* <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 p-0 text-muted-foreground hover:text-primary"
-              title="তথ্য সম্পাদনা"
-              onClick={(e) => {
-                e.stopPropagation();
-                onEdit(school);
-              }}
-            >
-              <span className="sr-only">তথ্য সম্পাদনা</span>
-              <Pencil className="h-4 w-4" />
-            </Button> */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -279,36 +316,38 @@ export function getSchoolColumns({
                   className="h-8 w-8 p-0"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <span className="sr-only">মেনু খুলুন</span>
+                  <span className="sr-only">Open menu</span>
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-52">
-                <DropdownMenuLabel className="text-xs">অ্যাকশন</DropdownMenuLabel>
+                <DropdownMenuLabel className="text-xs">
+                  {dict?.common.actions ?? "Actions"}
+                </DropdownMenuLabel>
                 <DropdownMenuItem
                   onClick={() => {
                     navigator.clipboard.writeText(school.id);
-                    toast.success("School ID ক্লিপবোর্ডে কপি হয়েছে");
+                    toast.success(dict?.schools.codeCopied ?? "Code copied to clipboard");
                   }}
                   className="cursor-pointer text-xs"
                 >
                   <Copy className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
-                  কপি আইডি
+                  {dict?.schools.copyCode ?? "Copy ID"}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => window.open(school.website, "_blank")}
                   className="cursor-pointer text-xs"
                 >
                   <ExternalLink className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
-                  ওয়েবসাইট ভিজিট
+                  {language === "bn" ? "ওয়েবসাইট ভিজিট" : "Visit Website"}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
-                  onClick={() => toast.info(`Viewing details of ${school.name}`)}
+                  onClick={() => toast.info(`${dict?.common.details ?? "Details"}: ${school.name}`)}
                   className="cursor-pointer text-xs"
                 >
                   <Eye className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
-                  বিস্তারিত দেখুন
+                  {dict?.common.details ?? "View Details"}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onSelect={() => {
@@ -319,7 +358,7 @@ export function getSchoolColumns({
                   className="cursor-pointer text-xs font-medium text-primary focus:text-primary"
                 >
                   <Pencil className="mr-2 h-3.5 w-3.5 text-primary" />
-                  তথ্য সম্পাদনা
+                  {dict?.schools.editSchool ?? "Edit School"}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
@@ -327,7 +366,7 @@ export function getSchoolColumns({
                   className="cursor-pointer text-xs text-destructive focus:text-destructive"
                 >
                   <Trash2 className="mr-2 h-3.5 w-3.5" />
-                  মুছে ফেলুন
+                  {dict?.schools.deleteSchool ?? "Delete School"}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

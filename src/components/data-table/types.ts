@@ -6,14 +6,14 @@ import type {
 } from "@tanstack/react-table/legacy";
 import type { ComponentType, ReactNode } from "react";
 
-export type DataTableInstance<TData extends RowData = any> = LegacyTable<TData>;
+export type DataTableInstance<TData extends RowData = Record<string, unknown>> = LegacyTable<TData>;
 export type DataTableColumn<
-  TData extends RowData = any,
+  TData extends RowData = Record<string, unknown>,
   TValue = unknown,
 > = LegacyColumn<TData, TValue>;
 
 export type DataTableColumnDef<
-  TData extends RowData = any,
+  TData extends RowData = Record<string, unknown>,
   TValue = unknown,
 > = LegacyColumnDef<TData, TValue>;
 export interface PaginationMeta {
@@ -109,7 +109,7 @@ export interface DataTableQueryParams {
  * Props for Server-Side Controlled DataTable component
  */
 export interface DataTableProps<
-  TData extends RowData = any,
+  TData extends RowData = Record<string, unknown>,
   TValue = unknown,
 > {
   columns: DataTableColumnDef<TData, TValue>[];

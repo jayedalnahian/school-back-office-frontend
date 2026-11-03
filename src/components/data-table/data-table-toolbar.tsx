@@ -12,8 +12,9 @@ import type {
   DataTableFilterConfig,
   DataTableInstance,
 } from "./types";
+import { useLanguage } from "@/i18n";
 
-export interface DataTableToolbarProps<TData extends RowData = any> {
+export interface DataTableToolbarProps<TData extends RowData = Record<string, unknown>> {
   table?: DataTableInstance<TData>;
 
   // Search input state & controls
@@ -34,11 +35,11 @@ export interface DataTableToolbarProps<TData extends RowData = any> {
   className?: string;
 }
 
-export function DataTableToolbar<TData extends RowData = any>({
+export function DataTableToolbar<TData extends RowData = Record<string, unknown>>({
   table,
   search = "",
   onSearchChange,
-  searchPlaceholder = "অনুসন্ধান করুন...",
+  searchPlaceholder,
   filterConfigs = [],
   filters = {},
   onResetFilters,
@@ -46,6 +47,9 @@ export function DataTableToolbar<TData extends RowData = any>({
   actions,
   className,
 }: DataTableToolbarProps<TData>) {
+  const { dict } = useLanguage();
+  const effectivePlaceholder = searchPlaceholder || dict.common.searchPlaceholder;
+
   // Check if any search or filter is currently active
   const isSearchActive = (search ?? "").trim().length > 0;
 
@@ -73,7 +77,7 @@ export function DataTableToolbar<TData extends RowData = any>({
           <div className="relative w-full sm:w-auto">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
             <Input
-              placeholder={searchPlaceholder}
+              placeholder={effectivePlaceholder}
               value={search}
               onChange={(event) => onSearchChange(event.target.value)}
               className="h-8.5 w-full pl-8 pr-7 text-xs sm:w-[220px] lg:w-[290px] bg-background/80"
@@ -83,7 +87,7 @@ export function DataTableToolbar<TData extends RowData = any>({
                 type="button"
                 onClick={() => onSearchChange("")}
                 className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-0.5 rounded cursor-pointer"
-                title="সার্চ মুছুন"
+                title={dict.common.clearSearch}
               >
                 <X className="h-3.5 w-3.5" />
                 <span className="sr-only">Clear search</span>
@@ -132,7 +136,7 @@ export function DataTableToolbar<TData extends RowData = any>({
             onClick={onResetFilters}
             className="h-8.5 px-2.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60"
           >
-            রিসেট (Reset)
+            {dict.common.resetFilters}
             <X className="ml-1.5 h-3.5 w-3.5" />
           </Button>
         )}

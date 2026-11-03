@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   parseAsInteger,
   parseAsString,
@@ -68,13 +68,14 @@ export function useDataTableQuery<
     scroll,
   });
 
-  // Local search term state for instant 60fps input responsiveness
+  // Local search term state with render-time synchronization
+  const [prevQuerySearch, setPrevQuerySearch] = useState(queryState.search || "");
   const [searchTerm, setSearchTerm] = useState(queryState.search || "");
 
-  // Sync local search term if URL query changes externally (e.g. back/forward button or reset)
-  useEffect(() => {
+  if (queryState.search !== prevQuerySearch) {
+    setPrevQuerySearch(queryState.search || "");
     setSearchTerm(queryState.search || "");
-  }, [queryState.search]);
+  }
 
   // Debounced callback that updates URL search param and resets page to 1
   const debouncedSyncSearch = useDebouncedCallback((val: string) => {
@@ -110,7 +111,7 @@ export function useDataTableQuery<
         debouncedSyncSearch(trimmed);
       }
     },
-    [debouncedSyncSearch, setQueryState, parsers]
+    [debouncedSyncSearch, setQueryState]
   );
 
   // Clear search filter
@@ -121,7 +122,7 @@ export function useDataTableQuery<
       search: "",
       page: 1,
     } as unknown as Partial<Values<typeof parsers>>);
-  }, [debouncedSyncSearch, setQueryState, parsers]);
+  }, [debouncedSyncSearch, setQueryState]);
 
   // Page setter
   const setPage = useCallback(
@@ -132,7 +133,7 @@ export function useDataTableQuery<
         page: Math.max(1, targetPage),
       } as unknown as Partial<Values<typeof parsers>>);
     },
-    [queryState.page, setQueryState, parsers]
+    [queryState.page, setQueryState]
   );
 
   // Page limit / size setter (resets page to 1)
@@ -143,7 +144,7 @@ export function useDataTableQuery<
         page: 1,
       } as unknown as Partial<Values<typeof parsers>>);
     },
-    [setQueryState, parsers]
+    [setQueryState]
   );
 
   // Sorting setter
@@ -155,7 +156,7 @@ export function useDataTableQuery<
         page: 1,
       } as unknown as Partial<Values<typeof parsers>>);
     },
-    [setQueryState, parsers]
+    [setQueryState]
   );
 
   // Toggle sorting for a field: asc -> desc -> null -> asc
@@ -180,7 +181,7 @@ export function useDataTableQuery<
         page: 1,
       } as unknown as Partial<Values<typeof parsers>>);
     },
-    [setQueryState, parsers]
+    [setQueryState]
   );
 
   // Batch update filters (resets page to 1)
@@ -192,7 +193,7 @@ export function useDataTableQuery<
       }
       setQueryState(updates as unknown as Partial<Values<typeof parsers>>);
     },
-    [setQueryState, parsers]
+    [setQueryState]
   );
 
   // Reset all filters and search back to defaults
@@ -222,7 +223,6 @@ export function useDataTableQuery<
     defaultSortOrder,
     filterParsers,
     setQueryState,
-    parsers,
   ]);
 
   // Extract custom filters from query state

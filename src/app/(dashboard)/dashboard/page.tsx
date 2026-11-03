@@ -1,3 +1,5 @@
+"use client";
+
 import * as React from "react";
 import Link from "next/link";
 import {
@@ -15,18 +17,13 @@ import {
   Bell,
   Clock,
 } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { AttendanceChart } from "@/components/dashboard/attendance-chart";
+import { useLanguage } from "@/i18n";
 
 export default function DashboardPage() {
+  const { dict } = useLanguage();
+
   return (
     <div className="space-y-5 sm:space-y-6 w-full min-w-0 max-w-full overflow-hidden">
       {/* 1. Page Title & Executive Header Banner */}
@@ -36,21 +33,21 @@ export default function DashboardPage() {
             <div className="flex items-center gap-2">
               <span className="inline-block h-2 w-2 rounded-full bg-emerald-600 dark:bg-emerald-400" />
               <span className="text-xs font-semibold text-primary dark:text-sky-400">
-                প্রাতিষ্ঠানিক নিয়ন্ত্রণ কক্ষ • Institutional Dashboard
+                {dict.dashboard.badge}
               </span>
             </div>
             <h1 className="text-xl sm:text-2xl font-bold text-foreground font-sans tracking-normal">
-              স্বাগতম, প্রধান শিক্ষক ও অ্যাডমিন
+              {dict.dashboard.title}
             </h1>
             <p className="text-xs sm:text-sm text-muted-foreground max-w-2xl">
-              বিদ্যালয়ের সার্বিক একাডেমিক অগ্রগতি, শিক্ষার্থী হাজিরা এবং প্রাতিষ্ঠানিক প্রশাসনিক তথ্যাদি
+              {dict.dashboard.description}
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-2.5 shrink-0 pt-1 lg:pt-0">
             <div className="inline-flex items-center gap-1.5 rounded-md border border-border bg-muted/40 px-3 py-1.5 text-xs font-medium text-foreground">
               <CalendarDays className="h-3.5 w-3.5 text-muted-foreground" />
-              <span>১০ অক্টোবর ২০২৬</span>
+              <span>{dict.dashboard.todayDate}</span>
             </div>
             <Link href="/schools">
               <Button
@@ -58,7 +55,7 @@ export default function DashboardPage() {
                 className="gap-2 text-xs font-semibold shadow-xs"
               >
                 <Building2 className="h-3.5 w-3.5" />
-                বিদ্যালয় তালিকা ও অনবোর্ডিং
+                {dict.dashboard.schoolDirectoryButton}
               </Button>
             </Link>
           </div>
@@ -71,18 +68,22 @@ export default function DashboardPage() {
         <div className="rounded-lg border border-border bg-card p-4 sm:p-5 shadow-xs relative overflow-hidden">
           <div className="absolute top-0 inset-x-0 h-0.5 bg-blue-600 dark:bg-blue-500" />
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-muted-foreground">মোট শিক্ষার্থী</span>
+            <span className="text-xs font-medium text-muted-foreground">
+              {dict.dashboard.totalStudents}
+            </span>
             <div className="flex h-8 w-8 items-center justify-center rounded-md bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-400 border border-blue-200/60 dark:border-blue-900/60">
               <GraduationCap className="h-4 w-4" />
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-2xl font-bold text-foreground font-sans">৮৪০ জন</div>
+            <div className="text-2xl font-bold text-foreground font-sans">
+              {dict.dashboard.totalStudentsCount}
+            </div>
             <div className="mt-1.5 flex items-center gap-1.5 text-xs text-muted-foreground">
               <span className="inline-flex items-center font-medium text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-1.5 py-0.5 rounded text-[11px]">
-                <TrendingUp className="mr-0.5 h-3 w-3" /> +৪.৫%
+                <TrendingUp className="mr-0.5 h-3 w-3" /> {dict.dashboard.growthRate}
               </span>
-              <span>পূর্ববর্তী বছরের তুলনায়</span>
+              <span>{dict.dashboard.comparedToLastYear}</span>
             </div>
           </div>
         </div>
@@ -91,18 +92,21 @@ export default function DashboardPage() {
         <div className="rounded-lg border border-border bg-card p-4 sm:p-5 shadow-xs relative overflow-hidden">
           <div className="absolute top-0 inset-x-0 h-0.5 bg-indigo-600 dark:bg-indigo-500" />
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-muted-foreground">শিক্ষক ও স্টাফ</span>
+            <span className="text-xs font-medium text-muted-foreground">
+              {dict.dashboard.teachersStaff}
+            </span>
             <div className="flex h-8 w-8 items-center justify-center rounded-md bg-indigo-50 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-900/60">
               <UserCheck className="h-4 w-4" />
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-2xl font-bold text-foreground font-sans">৩৬ জন</div>
+            <div className="text-2xl font-bold text-foreground font-sans">
+              {dict.dashboard.teachersStaffCount}
+            </div>
             <div className="mt-1.5 flex items-center gap-1.5 text-xs text-muted-foreground">
               <span className="inline-flex items-center font-medium text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-1.5 py-0.5 rounded text-[11px]">
-                ৩২ জন
+                {dict.dashboard.teachersPresentToday}
               </span>
-              <span>আজ উপস্থিত আছেন</span>
             </div>
           </div>
         </div>
@@ -111,16 +115,19 @@ export default function DashboardPage() {
         <div className="rounded-lg border border-border bg-card p-4 sm:p-5 shadow-xs relative overflow-hidden">
           <div className="absolute top-0 inset-x-0 h-0.5 bg-emerald-600 dark:bg-emerald-500" />
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-muted-foreground">আজকের গড় হাজিরা</span>
+            <span className="text-xs font-medium text-muted-foreground">
+              {dict.dashboard.todayAttendance}
+            </span>
             <div className="flex h-8 w-8 items-center justify-center rounded-md bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-900/60">
               <CheckCircle2 className="h-4 w-4" />
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-2xl font-bold text-foreground font-sans">৯৬.২%</div>
+            <div className="text-2xl font-bold text-foreground font-sans">
+              {dict.dashboard.todayAttendanceRate}
+            </div>
             <div className="mt-1.5 flex items-center gap-1.5 text-xs text-muted-foreground">
-              <span className="font-semibold text-foreground">৮০৮ জন</span>
-              <span>উপস্থিত (অনুপস্থিত ৩২ জন)</span>
+              <span>{dict.dashboard.attendancePresentDetail}</span>
             </div>
           </div>
         </div>
@@ -129,15 +136,19 @@ export default function DashboardPage() {
         <div className="rounded-lg border border-border bg-card p-4 sm:p-5 shadow-xs relative overflow-hidden">
           <div className="absolute top-0 inset-x-0 h-0.5 bg-amber-600 dark:bg-amber-500" />
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-muted-foreground">সক্রিয় শাখা ও শ্রেণি</span>
+            <span className="text-xs font-medium text-muted-foreground">
+              {dict.dashboard.activeSections}
+            </span>
             <div className="flex h-8 w-8 items-center justify-center rounded-md bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-400 border border-amber-200/60 dark:border-amber-900/60">
               <Layers className="h-4 w-4" />
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-2xl font-bold text-foreground font-sans">১৮ টি</div>
+            <div className="text-2xl font-bold text-foreground font-sans">
+              {dict.dashboard.activeSectionsCount}
+            </div>
             <div className="mt-1.5 flex items-center gap-1.5 text-xs text-muted-foreground">
-              <span>১ম থেকে ৫ম শ্রেণি পর্যন্ত</span>
+              <span>{dict.dashboard.classesRange}</span>
             </div>
           </div>
         </div>
@@ -148,14 +159,14 @@ export default function DashboardPage() {
         <div className="p-4 sm:p-5 border-b border-border bg-muted/20 flex items-center justify-between">
           <div>
             <h2 className="text-sm font-bold text-foreground">
-              দ্রুত প্রশাসনিক কার্যক্রম (Quick Actions)
+              {dict.dashboard.quickActions}
             </h2>
             <p className="text-xs text-muted-foreground mt-0.5">
-              দৈনন্দিন নিয়মিত প্রাতিষ্ঠানিক কার্যক্রম দ্রুত সম্পাদন করুন
+              {dict.dashboard.quickActionsSub}
             </p>
           </div>
           <span className="hidden sm:inline-block text-[11px] font-medium text-muted-foreground bg-background px-2 py-0.5 rounded border border-border">
-            ৪টি মডিউল
+            {dict.dashboard.quickActionsCount}
           </span>
         </div>
         <div className="p-4 sm:p-5">
@@ -168,7 +179,7 @@ export default function DashboardPage() {
                 <UserPlus className="h-4 w-4" />
               </div>
               <span className="text-xs font-semibold text-foreground group-hover:text-primary transition-colors">
-                নতুন ভর্তি
+                {dict.dashboard.newAdmission}
               </span>
             </Link>
 
@@ -180,7 +191,7 @@ export default function DashboardPage() {
                 <CalendarCheck className="h-4 w-4" />
               </div>
               <span className="text-xs font-semibold text-foreground group-hover:text-primary transition-colors">
-                হাজিরা গ্রহণ
+                {dict.dashboard.takeAttendance}
               </span>
             </Link>
 
@@ -192,7 +203,7 @@ export default function DashboardPage() {
                 <CalendarDays className="h-4 w-4" />
               </div>
               <span className="text-xs font-semibold text-foreground group-hover:text-primary transition-colors">
-                ক্লাস রুটিন
+                {dict.dashboard.classRoutine}
               </span>
             </Link>
 
@@ -204,7 +215,7 @@ export default function DashboardPage() {
                 <Award className="h-4 w-4" />
               </div>
               <span className="text-xs font-semibold text-foreground group-hover:text-primary transition-colors">
-                মূল্যায়ন ও ফলাফল
+                {dict.dashboard.evaluationsResults}
               </span>
             </Link>
           </div>
@@ -218,14 +229,14 @@ export default function DashboardPage() {
           <div className="p-4 sm:p-5 border-b border-border bg-muted/20 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>
               <h2 className="text-sm font-bold text-foreground">
-                সাপ্তাহিক উপস্থিতি বিবরণী
+                {dict.dashboard.weeklyAttendanceReport}
               </h2>
               <p className="text-xs text-muted-foreground mt-0.5">
-                চলতি সপ্তাহের কার্যদিবস অনুযায়ী উপস্থিতি ও অনুপস্থিতির তুলনামূলক গ্রাফ
+                {dict.dashboard.weeklyAttendanceReportSub}
               </p>
             </div>
             <span className="text-[11px] font-medium text-muted-foreground bg-background px-2 py-0.5 rounded border border-border w-fit">
-              রবি - বৃহস্পতি
+              {dict.dashboard.weekdaysRange}
             </span>
           </div>
           <div className="p-4 sm:p-5">
@@ -239,10 +250,10 @@ export default function DashboardPage() {
             <div className="p-4 sm:p-5 border-b border-border bg-muted/20 flex items-center justify-between gap-2">
               <div>
                 <h2 className="text-sm font-bold text-foreground">
-                  সর্বশেষ নোটিশ ও সার্কুলার
+                  {dict.dashboard.latestNotices}
                 </h2>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  বিদ্যালয়ের সাম্প্রতিক প্রাতিষ্ঠানিক আপডেট
+                  {dict.dashboard.latestNoticesSub}
                 </p>
               </div>
               <Bell className="h-4 w-4 text-muted-foreground shrink-0" />
@@ -252,34 +263,34 @@ export default function DashboardPage() {
               <div className="rounded-md border border-border border-l-2 border-l-blue-600 bg-muted/20 p-3 space-y-1">
                 <div className="flex items-center justify-between gap-1 text-xs">
                   <span className="text-[10px] font-semibold text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 px-1.5 py-0.5 rounded">
-                    একাডেমিক
+                    {dict.dashboard.academicTag}
                   </span>
                   <span className="text-muted-foreground flex items-center gap-1 text-[11px]">
-                    <Clock className="h-3 w-3" /> আজ ০৯:৩০
+                    <Clock className="h-3 w-3" /> {dict.dashboard.timeToday}
                   </span>
                 </div>
                 <p className="text-xs sm:text-sm font-semibold text-foreground leading-snug">
-                  প্রথম প্রান্তিক মূল্যায়নের প্রস্তুতি সভা অনুষ্ঠিত হবে।
+                  {dict.dashboard.notice1Title}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  সকল সহকারী শিক্ষককে প্রধান শিক্ষকের কক্ষে উপস্থিত থাকার জন্য অনুরোধ করা যাচ্ছে।
+                  {dict.dashboard.notice1Desc}
                 </p>
               </div>
 
               <div className="rounded-md border border-border border-l-2 border-l-emerald-600 bg-muted/20 p-3 space-y-1">
                 <div className="flex items-center justify-between gap-1 text-xs">
                   <span className="text-[10px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-1.5 py-0.5 rounded">
-                    ভর্তি কার্যক্রম
+                    {dict.dashboard.admissionTag}
                   </span>
                   <span className="text-muted-foreground flex items-center gap-1 text-[11px]">
-                    <Clock className="h-3 w-3" /> গতকাল
+                    <Clock className="h-3 w-3" /> {dict.dashboard.timeYesterday}
                   </span>
                 </div>
                 <p className="text-xs sm:text-sm font-semibold text-foreground leading-snug">
-                  নতুন ভর্তি শিক্ষার্থীদের তথ্য ও রোল নম্বর যাচাইকরণ সম্পন্ন।
+                  {dict.dashboard.notice2Title}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  ১ম থেকে ৪র্থ শ্রেণির চূড়ান্ত তালিকা প্রকাশ করা হয়েছে।
+                  {dict.dashboard.notice2Desc}
                 </p>
               </div>
             </div>
@@ -291,7 +302,7 @@ export default function DashboardPage() {
               size="sm"
               className="w-full justify-between text-xs font-semibold text-primary hover:text-primary hover:bg-primary/5 h-8"
             >
-              <span>সকল নোটিশ ও আদেশপত্র দেখুন</span>
+              <span>{dict.dashboard.viewAllNotices}</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </Button>
           </div>

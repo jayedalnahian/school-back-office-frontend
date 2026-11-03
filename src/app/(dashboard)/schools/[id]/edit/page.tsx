@@ -14,8 +14,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { SchoolUpdateForm } from "@/components/schools";
+import { useLanguage } from "@/i18n";
 
 export default function SchoolEditPage() {
+  const { dict } = useLanguage();
   const router = useRouter();
   const params = useParams();
   const schoolId = React.useMemo(() => {
@@ -34,9 +36,9 @@ export default function SchoolEditPage() {
             className="h-9 w-9 shrink-0"
             asChild
           >
-            <Link href="/schools">
+            <Link href="/schools" title={dict.common.back}>
               <ArrowLeft className="size-4" />
-              <span className="sr-only">Back to schools list</span>
+              <span className="sr-only">{dict.common.back}</span>
             </Link>
           </Button>
           <div>
@@ -45,11 +47,11 @@ export default function SchoolEditPage() {
                 <Building2 className="size-5" />
               </div>
               <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
-                বিদ্যালয়ের তথ্য সম্পাদনা (Edit School)
+                {dict.schools.editSchoolTitle}
               </h1>
             </div>
             <p className="mt-0.5 text-xs text-muted-foreground sm:text-sm">
-              বিদ্যালয়ের বর্তমান তথ্য হালনাগাদ ও পরিবর্তন সংরক্ষণ করুন
+              {dict.schools.editSchoolSubtitle}
             </p>
           </div>
         </div>
@@ -59,10 +61,10 @@ export default function SchoolEditPage() {
       <Card className="shadow-xs">
         <CardHeader className="border-b bg-muted/20 pb-4">
           <CardTitle className="text-base font-semibold">
-            তথ্য সম্পাদনা ফরম (PATCH /schools/:id)
+            {dict.schools.editSchoolTitle}
           </CardTitle>
           <CardDescription className="text-xs">
-            সঠিক তথ্য প্রদান করে নিচের ফর্মটি আপডেট করুন। &quot;*&quot; চিহ্নিত ফিল্ডসমূহ বাধ্যতামূলক।
+            {dict.common.requiredFieldNotice}
           </CardDescription>
         </CardHeader>
 
@@ -79,7 +81,7 @@ export default function SchoolEditPage() {
             />
           ) : (
             <div className="py-8 text-center text-sm text-muted-foreground">
-              বিদ্যালয়ের আইডি পাওয়া যায়নি
+              {dict.common.noRecordsFound}
             </div>
           )}
         </CardContent>

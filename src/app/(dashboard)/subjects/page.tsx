@@ -4,68 +4,80 @@ import * as React from "react";
 import { BookOpen, CheckCircle2, FileText, Layers } from "lucide-react";
 import { ModulePageView } from "@/components/layouts/module-view";
 import { Badge } from "@/components/ui/badge";
+import { useLanguage } from "@/i18n";
 
 export default function SubjectsPage() {
+  const { dict, language } = useLanguage();
+  const m = dict.modules.subjects;
+
   return (
     <ModulePageView
-      title="পাঠ্যবিষয় ও জাতীয় কারিকুলাম"
-      englishTitle="Subjects & Curriculum Management"
-      description="জাতীয় শিক্ষাক্রম ও পাঠ্যপুস্তক বোর্ড (NCTB) অনুমোদিত প্রাথমিক পাঠ্যবিষয় তালিকা"
+      title={m.title}
+      englishTitle={language === "bn" ? "Subjects & Curriculum Management" : undefined}
+      description={m.subtitle}
       icon={BookOpen}
-      badge="একাডেমিক কাঠামো"
-      actionText="নতুন পাঠ্যবিষয় যুক্ত করুন"
+      badge={m.badge}
+      actionText={m.action}
       stats={[
-        { label: "মোট পাঠ্যবিষয়", value: "১০ টি", icon: BookOpen },
-        { label: "আবশ্যিক বিষয়", value: "৬ টি", change: "১ম - ৫ম শ্রেণি", icon: CheckCircle2 },
-        { label: "ধর্ম ও নৈতিক শিক্ষা", value: "৪ টি", icon: FileText },
-        { label: "অনুমোদিত কারিকুলাম", value: "NCTB ২০২৬", icon: Layers },
+        { label: m.stat1, value: language === "bn" ? "১০ টি" : "10 Subjects", icon: BookOpen },
+        { label: m.stat2, value: language === "bn" ? "৬ টি" : "6 Subjects", change: language === "bn" ? "১ম - ৫ম শ্রেণি" : "Class 1-5", icon: CheckCircle2 },
+        { label: m.stat3, value: language === "bn" ? "৪ টি" : "4 Subjects", icon: FileText },
+        { label: m.stat4, value: "NCTB 2026", icon: Layers },
       ]}
-      columns={["বিষয়ের নাম", "বিষয় কোড", "প্রযোজ্য শ্রেণি", "পূর্ণমান", "সাপ্তাহিক পিরিয়ড", "ধরন"]}
+      columns={[m.col1, m.col2, m.col3, m.col4, m.col5, m.col6]}
       data={[
         [
-          <span key="1" className="font-semibold text-foreground">আমার বাংলা বই</span>,
+          <span key="1" className="font-semibold text-foreground">
+            {language === "bn" ? "আমার বাংলা বই" : "Amar Bangla Boi (Bangla)"}
+          </span>,
           "BAN-101",
-          "১ম - ৫ম শ্রেণি",
-          "১০০",
-          "৬ টি পিরিয়ড",
-          <Badge key="status" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">🟢 আবশ্যিক</Badge>,
+          language === "bn" ? "১ম - ৫ম শ্রেণি" : "Class 1-5",
+          "100",
+          language === "bn" ? "৬ টি পিরিয়ড" : "6 Periods/week",
+          <Badge key="status" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">🟢 {language === "bn" ? "আবশ্যিক" : "Compulsory"}</Badge>,
         ],
         [
-          <span key="2" className="font-semibold text-foreground">English for Today</span>,
+          <span key="2" className="font-semibold text-foreground">
+            English for Today
+          </span>,
           "ENG-102",
-          "১ম - ৫ম শ্রেণি",
-          "১০০",
-          "৬ টি পিরিয়ড",
-          <Badge key="status" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">🟢 আবশ্যিক</Badge>,
+          language === "bn" ? "১ম - ৫ম শ্রেণি" : "Class 1-5",
+          "100",
+          language === "bn" ? "৬ টি পিরিয়ড" : "6 Periods/week",
+          <Badge key="status" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">🟢 {language === "bn" ? "আবশ্যিক" : "Compulsory"}</Badge>,
         ],
         [
-          <span key="3" className="font-semibold text-foreground">প্রাথমিক গণিত</span>,
+          <span key="3" className="font-semibold text-foreground">
+            {language === "bn" ? "প্রাথমিক গণিত" : "Elementary Mathematics"}
+          </span>,
           "MAT-103",
-          "১ম - ৫ম শ্রেণি",
-          "১০০",
-          "৬ টি পিরিয়ড",
-          <Badge key="status" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">🟢 আবশ্যিক</Badge>,
+          language === "bn" ? "১ম - ৫ম শ্রেণি" : "Class 1-5",
+          "100",
+          language === "bn" ? "৬ টি পিরিয়ড" : "6 Periods/week",
+          <Badge key="status" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">🟢 {language === "bn" ? "আবশ্যিক" : "Compulsory"}</Badge>,
         ],
         [
-          <span key="4" className="font-semibold text-foreground">প্রাথমিক বিজ্ঞান</span>,
+          <span key="4" className="font-semibold text-foreground">
+            {language === "bn" ? "প্রাথমিক বিজ্ঞান" : "Elementary Science"}
+          </span>,
           "SCI-104",
-          "৩য় - ৫ম শ্রেণি",
-          "১০০",
-          "৫ টি পিরিয়ড",
-          <Badge key="status" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">🟢 আবশ্যিক</Badge>,
+          language === "bn" ? "৩য় - ৫ম শ্রেণি" : "Class 3-5",
+          "100",
+          language === "bn" ? "৫ টি পিরিয়ড" : "5 Periods/week",
+          <Badge key="status" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">🟢 {language === "bn" ? "আবশ্যিক" : "Compulsory"}</Badge>,
         ],
         [
-          <span key="5" className="font-semibold text-foreground">বাংলাদেশ ও বিশ্বপরিচয়</span>,
+          <span key="5" className="font-semibold text-foreground">
+            {language === "bn" ? "বাংলাদেশ ও বিশ্বপরিচয়" : "Bangladesh & Global Studies"}
+          </span>,
           "BGS-105",
-          "৩য় - ৫ম শ্রেণি",
-          "১০০",
-          "৫ টি পিরিয়ড",
-          <Badge key="status" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">🟢 আবশ্যিক</Badge>,
+          language === "bn" ? "৩য় - ৫ম শ্রেণি" : "Class 3-5",
+          "100",
+          language === "bn" ? "৫ টি পিরিয়ড" : "5 Periods/week",
+          <Badge key="status" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">🟢 {language === "bn" ? "আবশ্যিক" : "Compulsory"}</Badge>,
         ],
       ]}
-      searchPlaceholder="পাঠ্যবিষয়ের নাম বা কোড দিয়ে খুঁজুন..."
-      notice="নতুন যোগ্যতাভিত্তিক শিক্ষাক্রম অনুসারে প্রতিটি বিষয়ের জন্য পারদর্শিতা নির্দেশক (PI) এবং শিখন কার্যক্রম যথাযথভাবে অনুসরণ করতে হবে।"
+      notice={m.notice}
     />
   );
 }
-
