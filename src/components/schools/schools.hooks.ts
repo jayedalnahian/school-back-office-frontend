@@ -18,8 +18,6 @@ export function useSchoolsTable() {
   const [isOnboardingOpen, setIsOnboardingOpen] = React.useState(false);
   const [editingSchoolId, setEditingSchoolId] = React.useState<string | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
-  const emptySubscribe = React.useCallback(() => () => {}, []);
-  const isMounted = React.useSyncExternalStore(emptySubscribe, () => true, () => false);
 
   // 1. URL State Management (nuqs + debouncing)
   const {
@@ -133,9 +131,8 @@ export function useSchoolsTable() {
     // Data & Query States
     data: data?.data ?? [],
     meta: data?.meta,
-    isLoading: isMounted ? isLoading : false,
-    isFetching: isMounted ? isFetching : false,
-    isMounted,
+    isLoading,
+    isFetching,
     isError,
     error,
 
