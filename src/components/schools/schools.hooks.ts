@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { useDataTableQuery } from "@/components/data-table";
 import { fetchSchools, deleteSchool } from "./schools.service";
 import { getSchoolColumns } from "./schools.columns";
-import type { SchoolRecord, CreatedSchoolResult } from "./schools.types";
+import type { SchoolRecord, CreatedSchoolResult, SchoolUpdateFormData } from "./schools.types";
 
 /**
  * Custom hook encapsulating all business logic, server-side querying,
@@ -16,8 +16,8 @@ import type { SchoolRecord, CreatedSchoolResult } from "./schools.types";
 export function useSchoolsTable() {
   const queryClient = useQueryClient();
   const [isOnboardingOpen, setIsOnboardingOpen] = React.useState(false);
-  const emptySubscribe = React.useCallback(() => () => {}, []);
-  const isMounted = React.useSyncExternalStore(emptySubscribe, () => true, () => false);
+  const [editingSchoolId, setEditingSchoolId] = React.useState<string | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
 
   // 1. URL State Management (nuqs + debouncing)
   const {
@@ -88,7 +88,33 @@ export function useSchoolsTable() {
     [queryClient]
   );
 
-  // 6. Memoized Table Columns bound to state and handlers
+  // 6. Business Logic: School Edit Handlers
+  const handleOpenEdit = React.useCallback((school: SchoolRecord) => {
+    setEditingSchoolId(school.id);
+    setTimeout(() => {
+      setIsEditDialogOpen(true);
+    }, 50);
+  }, []);
+
+  const handleCloseEdit = React.useCallback((open: boolean) => {
+    setIsEditDialogOpen(open);
+    if (!open) {
+      setTimeout(() => {
+        setEditingSchoolId(null);
+      }, 300);
+    }
+  }, []);
+
+  const handleSchoolUpdated = React.useCallback(
+    (updatedSchool: SchoolUpdateFormData) => {
+      queryClient.invalidateQueries({ queryKey: ["schools"] });
+      setIsEditDialogOpen(false);
+      setEditingSchoolId(null);
+    },
+    [queryClient]
+  );
+
+  // 7. Memoized Table Columns bound to state and handlers
   const columns = React.useMemo(
     () =>
       getSchoolColumns({
@@ -96,17 +122,17 @@ export function useSchoolsTable() {
         sortOrder,
         onSortChange: setSorting,
         onDelete: handleDeleteSchool,
+        onEdit: handleOpenEdit,
       }),
-    [sortBy, sortOrder, setSorting, handleDeleteSchool]
+    [sortBy, sortOrder, setSorting, handleDeleteSchool, handleOpenEdit]
   );
 
   return {
     // Data & Query States
     data: data?.data ?? [],
     meta: data?.meta,
-    isLoading: isMounted ? isLoading : false,
-    isFetching: isMounted ? isFetching : false,
-    isMounted,
+    isLoading,
+    isFetching,
     isError,
     error,
 
@@ -136,5 +162,12 @@ export function useSchoolsTable() {
     handleSchoolCreated,
     handleReload,
     handleDeleteSchool,
+
+    // Edit Modal State & Action Handlers
+    editingSchoolId,
+    isEditDialogOpen,
+    setIsEditDialogOpen: handleCloseEdit,
+    handleOpenEdit,
+    handleSchoolUpdated,
   };
 }
