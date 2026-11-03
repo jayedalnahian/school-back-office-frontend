@@ -8,12 +8,14 @@ import { useDataTableQuery } from "@/components/data-table";
 import { fetchSchools, deleteSchool } from "./schools.service";
 import { getSchoolColumns } from "./schools.columns";
 import type { SchoolRecord, CreatedSchoolResult, SchoolUpdateFormData } from "./schools.types";
+import { useLanguage } from "@/i18n";
 
 /**
  * Custom hook encapsulating all business logic, server-side querying,
  * URL synchronization, and user action handlers for the Schools table.
  */
 export function useSchoolsTable() {
+  const { dict, language, formatNumber } = useLanguage();
   const queryClient = useQueryClient();
   const [isOnboardingOpen, setIsOnboardingOpen] = React.useState(false);
   const [editingSchoolId, setEditingSchoolId] = React.useState<string | null>(null);
@@ -58,34 +60,34 @@ export function useSchoolsTable() {
   const handleReload = React.useCallback(async () => {
     try {
       await refetch();
-      toast.success("বিদ্যালয়ের তথ্য সফলভাবে রিলোড করা হয়েছে!");
+      toast.success(dict.schools.reloadSuccess);
     } catch {
-      toast.error("ডাটা রিলোড করতে ব্যর্থ হয়েছে");
+      toast.error(dict.common.failedToLoad);
     }
-  }, [refetch]);
+  }, [refetch, dict]);
 
   // 4. Business Logic: Delete School Handler
   const handleDeleteSchool = React.useCallback(
     async (school: SchoolRecord) => {
       try {
         await deleteSchool(school.id);
-        toast.success(`"${school.name}" সফলভাবে মুছে ফেলা হয়েছে!`);
+        toast.success(`"${school.name}" ${dict.schools.deletedSuccess}`);
         queryClient.invalidateQueries({ queryKey: ["schools"] });
       } catch (err) {
         console.error("Delete school failed:", err);
-        toast.error("বিদ্যালয়টি মুছে ফেলতে ব্যর্থ হয়েছে");
+        toast.error(dict.schools.deleteFailed);
       }
     },
-    [queryClient]
+    [queryClient, dict]
   );
 
   // 5. Business Logic: School Onboarding Success Callback
   const handleSchoolCreated = React.useCallback(
     (newSchool: CreatedSchoolResult) => {
       queryClient.invalidateQueries({ queryKey: ["schools"] });
-      toast.success(`"${newSchool.name}" সফলভাবে যুক্ত হয়েছে!`);
+      toast.success(`"${newSchool.name}" ${dict.schools.onboardSuccess}`);
     },
-    [queryClient]
+    [queryClient, dict]
   );
 
   // 6. Business Logic: School Edit Handlers
@@ -106,7 +108,7 @@ export function useSchoolsTable() {
   }, []);
 
   const handleSchoolUpdated = React.useCallback(
-    (updatedSchool: SchoolUpdateFormData) => {
+    () => {
       queryClient.invalidateQueries({ queryKey: ["schools"] });
       setIsEditDialogOpen(false);
       setEditingSchoolId(null);
@@ -118,13 +120,16 @@ export function useSchoolsTable() {
   const columns = React.useMemo(
     () =>
       getSchoolColumns({
+        dict,
+        language,
+        formatNumber,
         sortBy,
         sortOrder,
         onSortChange: setSorting,
         onDelete: handleDeleteSchool,
         onEdit: handleOpenEdit,
       }),
-    [sortBy, sortOrder, setSorting, handleDeleteSchool, handleOpenEdit]
+    [dict, language, formatNumber, sortBy, sortOrder, setSorting, handleDeleteSchool, handleOpenEdit]
   );
 
   return {
@@ -159,15 +164,15 @@ export function useSchoolsTable() {
     // Modal State & Action Handlers
     isOnboardingOpen,
     setIsOnboardingOpen,
-    handleSchoolCreated,
-    handleReload,
-    handleDeleteSchool,
-
-    // Edit Modal State & Action Handlers
     editingSchoolId,
     isEditDialogOpen,
     setIsEditDialogOpen: handleCloseEdit,
     handleOpenEdit,
+    handleReload,
+    handleDeleteSchool,
+    handleSchoolCreated,
     handleSchoolUpdated,
   };
 }
+
+export default useSchoolsTable;

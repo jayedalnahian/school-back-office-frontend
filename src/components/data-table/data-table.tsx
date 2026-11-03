@@ -23,9 +23,10 @@ import { Button } from "@/components/ui/button";
 import { DataTableToolbar } from "./data-table-toolbar";
 import { DataTablePagination } from "./data-table-pagination";
 import type { RowData } from "@tanstack/react-table";
-import type { DataTableProps } from "./types";
+import type { DataTableProps, DataTableColumnDef } from "./types";
+import { useLanguage } from "@/i18n";
 
-export function DataTable<TData extends RowData = any, TValue = unknown>({
+export function DataTable<TData extends RowData = Record<string, unknown>, TValue = unknown>({
   columns,
   data = [],
   meta,
@@ -64,6 +65,8 @@ export function DataTable<TData extends RowData = any, TValue = unknown>({
   onRowClick,
   className,
 }: DataTableProps<TData, TValue>) {
+  const { dict, language } = useLanguage();
+
   // Column visibility and row selection state for the table instance
   const [columnVisibility, setColumnVisibility] = React.useState({});
   const [rowSelection, setRowSelection] = React.useState({});
@@ -77,7 +80,7 @@ export function DataTable<TData extends RowData = any, TValue = unknown>({
   // TanStack Table Instance with manual controls
   const table = useReactTable({
     data,
-    columns: columns as any,
+    columns: columns as unknown as DataTableColumnDef<TData, unknown>[],
     getCoreRowModel: getCoreRowModel(),
     // Tell TanStack Table that pagination, sorting and filtering are server-controlled
     manualPagination: true,
@@ -171,12 +174,14 @@ export function DataTable<TData extends RowData = any, TValue = unknown>({
                 >
                   <div className="flex flex-col items-center justify-center gap-2 text-destructive">
                     <p className="text-sm font-semibold">
-                      ডাটা লোড করতে সমস্যা হয়েছে (Failed to load records)
+                      {dict.common.failedToLoad}
                     </p>
                     <p className="text-xs text-muted-foreground">
                       {error instanceof Error
                         ? error.message
-                        : "সার্ভার থেকে তথ্য গ্রহণ করার সময় একটি ত্রুটি ঘটেছে। অনুগ্রহ করে আবার চেষ্টা করুন।"}
+                        : (language === "bn"
+                            ? "সার্ভার থেকে তথ্য গ্রহণ করার সময় একটি ত্রুটি ঘটেছে। অনুগ্রহ করে আবার চেষ্টা করুন।"
+                            : "An error occurred while retrieving records from the server. Please try again.")}
                     </p>
                   </div>
                 </TableCell>
@@ -216,11 +221,13 @@ export function DataTable<TData extends RowData = any, TValue = unknown>({
                     </div>
                     <div className="space-y-1">
                       <p className="text-sm font-semibold text-foreground">
-                        {emptyTitle ?? "কোনো তথ্য পাওয়া যায়নি"}
+                        {emptyTitle ?? dict.common.noRecordsFound}
                       </p>
                       <p className="text-xs text-muted-foreground max-w-sm leading-relaxed">
                         {emptyDescription ??
-                          "আপনার বর্তমান সার্চ ও ফিল্টার অনুযায়ী কোনো রেকর্ড খুঁজে পাওয়া যায়নি।"}
+                          (language === "bn"
+                            ? "আপনার বর্তমান সার্চ ও ফিল্টার অনুযায়ী কোনো রেকর্ড খুঁজে পাওয়া যায়নি।"
+                            : "No records found matching your active search and filter criteria.")}
                       </p>
                     </div>
                     {onResetFilters && (
@@ -230,7 +237,7 @@ export function DataTable<TData extends RowData = any, TValue = unknown>({
                         onClick={onResetFilters}
                         className="mt-2 h-8 text-xs font-medium"
                       >
-                        ফিল্টার রিসেট করুন (Reset filters)
+                        {dict.common.resetFilters}
                       </Button>
                     )}
                   </div>

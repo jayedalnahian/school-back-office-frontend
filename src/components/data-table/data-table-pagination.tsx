@@ -18,8 +18,9 @@ import {
 } from "@/components/ui/select";
 import type { RowData } from "@tanstack/react-table";
 import type { DataTableInstance, PaginationMeta } from "./types";
+import { useLanguage } from "@/i18n";
 
-export interface DataTablePaginationProps<TData extends RowData = any> {
+export interface DataTablePaginationProps<TData extends RowData = Record<string, unknown>> {
   table?: DataTableInstance<TData>;
   meta?: PaginationMeta;
   page?: number;
@@ -30,7 +31,7 @@ export interface DataTablePaginationProps<TData extends RowData = any> {
   className?: string;
 }
 
-export function DataTablePagination<TData extends RowData = any>({
+export function DataTablePagination<TData extends RowData = Record<string, unknown>>({
   table,
   meta,
   page: controlledPage,
@@ -40,6 +41,8 @@ export function DataTablePagination<TData extends RowData = any>({
   onLimitChange,
   className,
 }: DataTablePaginationProps<TData>) {
+  const { dict, formatNumber, language } = useLanguage();
+
   // Determine pagination metrics from props or meta
   const currentPage = controlledPage ?? meta?.page ?? 1;
   const currentLimit = controlledLimit ?? meta?.limit ?? 10;
@@ -73,6 +76,9 @@ export function DataTablePagination<TData extends RowData = any>({
     }
   };
 
+  const fromRecord = Math.min((currentPage - 1) * currentLimit + 1, totalRecords);
+  const toRecord = Math.min(currentPage * currentLimit, totalRecords);
+
   return (
     <div
       className={cn(
@@ -84,22 +90,26 @@ export function DataTablePagination<TData extends RowData = any>({
       <div className="flex-1 text-xs text-muted-foreground">
         {selectedRowsCount > 0 ? (
           <span>
-            {selectedRowsCount} / {totalTableRows}টি সারি নির্বাচিত
+            {formatNumber(selectedRowsCount)} / {formatNumber(totalTableRows)}{" "}
+            {dict.common.selectedRows}
           </span>
         ) : totalRecords > 0 ? (
-          <span>
-            মোট <span className="font-semibold text-foreground">{totalRecords}</span>টি রেকর্ডের মধ্যে{" "}
-            <span className="font-semibold text-foreground">
-              {Math.min((currentPage - 1) * currentLimit + 1, totalRecords)}
+          language === "bn" ? (
+            <span>
+              মোট <span className="font-semibold text-foreground">{formatNumber(totalRecords)}</span>টি রেকর্ডের মধ্যে{" "}
+              <span className="font-semibold text-foreground">{formatNumber(fromRecord)}</span>–
+              <span className="font-semibold text-foreground">{formatNumber(toRecord)}</span>{" "}
+              প্রদর্শিত
             </span>
-            –
-            <span className="font-semibold text-foreground">
-              {Math.min(currentPage * currentLimit, totalRecords)}
-            </span>{" "}
-            প্রদর্শিত
-          </span>
+          ) : (
+            <span>
+              Showing <span className="font-semibold text-foreground">{formatNumber(fromRecord)}</span>–
+              <span className="font-semibold text-foreground">{formatNumber(toRecord)}</span> of{" "}
+              <span className="font-semibold text-foreground">{formatNumber(totalRecords)}</span> records
+            </span>
+          )
         ) : (
-          <span>কোনো রেকর্ড পাওয়া যায়নি</span>
+          <span>{dict.common.noRecordsFound}</span>
         )}
       </div>
 
@@ -108,7 +118,7 @@ export function DataTablePagination<TData extends RowData = any>({
         {/* Page size changer */}
         <div className="flex items-center gap-2">
           <p className="text-xs font-medium text-muted-foreground">
-            প্রতি পৃষ্ঠায়:
+            {dict.common.rowsPerPage}:
           </p>
           <Select
             value={`${currentLimit}`}
@@ -124,7 +134,7 @@ export function DataTablePagination<TData extends RowData = any>({
                   value={`${size}`}
                   className="text-xs cursor-pointer"
                 >
-                  {size}
+                  {formatNumber(size)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -133,10 +143,17 @@ export function DataTablePagination<TData extends RowData = any>({
 
         {/* Current page indicator */}
         <div className="flex items-center justify-center text-xs font-medium text-muted-foreground">
-          পৃষ্ঠা <span className="mx-1 text-foreground font-semibold">{currentPage}</span> /{" "}
-          <span className="ml-1 text-foreground font-semibold">
-            {Math.max(1, totalPages)}
-          </span>
+          {language === "bn" ? (
+            <>
+              পৃষ্ঠা <span className="mx-1 text-foreground font-semibold">{formatNumber(currentPage)}</span> /{" "}
+              <span className="ml-1 text-foreground font-semibold">{formatNumber(Math.max(1, totalPages))}</span>
+            </>
+          ) : (
+            <>
+              Page <span className="mx-1 text-foreground font-semibold">{formatNumber(currentPage)}</span> of{" "}
+              <span className="ml-1 text-foreground font-semibold">{formatNumber(Math.max(1, totalPages))}</span>
+            </>
+          )}
         </div>
 
         {/* Navigation buttons */}
@@ -147,7 +164,7 @@ export function DataTablePagination<TData extends RowData = any>({
             className="hidden h-8 w-8 lg:flex"
             onClick={() => handlePageChange(1)}
             disabled={!canPrevious}
-            title="প্রথম পৃষ্ঠা (First page)"
+            title={dict.common.firstPage}
             aria-label="First page"
           >
             <ChevronsLeft className="h-4 w-4" />
@@ -158,7 +175,7 @@ export function DataTablePagination<TData extends RowData = any>({
             className="h-8 w-8"
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={!canPrevious}
-            title="পূর্ববর্তী পৃষ্ঠা (Previous page)"
+            title={dict.common.previousPage}
             aria-label="Previous page"
           >
             <ChevronLeft className="h-4 w-4" />
@@ -169,7 +186,7 @@ export function DataTablePagination<TData extends RowData = any>({
             className="h-8 w-8"
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={!canNext}
-            title="পরবর্তী পৃষ্ঠা (Next page)"
+            title={dict.common.nextPage}
             aria-label="Next page"
           >
             <ChevronRight className="h-4 w-4" />
@@ -180,7 +197,7 @@ export function DataTablePagination<TData extends RowData = any>({
             className="hidden h-8 w-8 lg:flex"
             onClick={() => handlePageChange(totalPages)}
             disabled={!canNext}
-            title="শেষ পৃষ্ঠা (Last page)"
+            title={dict.common.lastPage}
             aria-label="Last page"
           >
             <ChevronsRight className="h-4 w-4" />

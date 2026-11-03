@@ -37,6 +37,7 @@ import {
 } from "./schools.validators";
 import type { SchoolUpdateFormData, UpdateSchoolPayload } from "./schools.types";
 import { getSchoolById, updateSchool } from "./schools.service";
+import { useLanguage } from "@/i18n";
 
 export interface SchoolUpdateFormProps {
   schoolId: string;
@@ -57,6 +58,7 @@ export function SchoolUpdateForm({
   onCancel,
   className,
 }: SchoolUpdateFormProps) {
+  const { dict } = useLanguage();
   const queryClient = useQueryClient();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
@@ -132,7 +134,7 @@ export function SchoolUpdateForm({
 
       const updated = await updateSchool(schoolId, payload);
 
-      toast.success(`"${updated.name}" এর তথ্য সফলভাবে আপডেট করা হয়েছে!`);
+      toast.success(`"${updated.name}" ${dict.schools.updateSuccess}`);
 
       // Invalidate relevant queries so the UI updates live
       queryClient.invalidateQueries({ queryKey: ["schools"] });
@@ -144,7 +146,7 @@ export function SchoolUpdateForm({
       const errMsg =
         err instanceof Error
           ? err.message
-          : "বিদ্যালয়ের তথ্য আপডেট করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।";
+          : dict.common.failedToLoad;
       toast.error(errMsg);
     } finally {
       setIsSubmitting(false);
@@ -155,7 +157,7 @@ export function SchoolUpdateForm({
     return (
       <div className="flex flex-col items-center justify-center py-16 text-muted-foreground gap-3">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <p className="text-sm">বিদ্যালয়ের বর্তমান তথ্য লোড করা হচ্ছে...</p>
+        <p className="text-sm">{dict.common.loading}</p>
         {onCancel && (
           <Button
             type="button"
@@ -164,7 +166,7 @@ export function SchoolUpdateForm({
             onClick={onCancel}
             className="mt-2 text-xs"
           >
-            বাতিল করুন
+            {dict.schoolForm.cancelBtn}
           </Button>
         )}
       </div>
@@ -176,7 +178,7 @@ export function SchoolUpdateForm({
       <div className="flex flex-col items-center justify-center py-12 text-center gap-3">
         <AlertCircle className="h-10 w-10 text-destructive" />
         <p className="text-sm text-foreground font-medium">
-          বিদ্যালয়ের তথ্য লোড করতে ব্যর্থ হয়েছে
+          {dict.common.failedToLoad}
         </p>
         <Button
           variant="outline"
@@ -185,7 +187,7 @@ export function SchoolUpdateForm({
           className="gap-1.5 text-xs"
         >
           <RefreshCw className="h-3.5 w-3.5" />
-          আবার চেষ্টা করুন
+          {dict.common.retry}
         </Button>
       </div>
     );
@@ -197,7 +199,7 @@ export function SchoolUpdateForm({
       <div className="rounded-lg border bg-muted/30 p-4 space-y-3">
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-            সনাক্তকরণ ও অবস্থা
+            {dict.schoolForm.section1Title}
           </span>
           <Badge
             variant="outline"
@@ -207,7 +209,7 @@ export function SchoolUpdateForm({
                 : "bg-amber-500/10 text-amber-600 border-amber-500/20"
             }
           >
-            {selectedStatus === "true" ? "🟢 সক্রিয়" : "🟡 নিষ্ক্রিয়"}
+            {selectedStatus === "true" ? `🟢 ${dict.common.active}` : `🟡 ${dict.common.inactive}`}
           </Badge>
         </div>
 
@@ -217,18 +219,18 @@ export function SchoolUpdateForm({
             <div className="flex items-center justify-between">
               <Label className="text-xs font-medium flex items-center gap-1.5">
                 <Hash className="h-3.5 w-3.5 text-muted-foreground" />
-                জিপিএস কোড (GPS Code)
+                {dict.schoolForm.gpsCodeLabel}
               </Label>
               <span className="text-[10px] text-muted-foreground flex items-center gap-1 bg-muted px-1.5 py-0.5 rounded">
                 <Lock className="h-3 w-3" />
-                লক করা (অপরিবর্তনীয়)
+                {dict.schoolForm.gpsLockedNotice}
               </span>
             </div>
             <Input
               value={schoolData?.gps_code || ""}
               disabled
               className="h-9 font-mono text-xs bg-muted/60 text-muted-foreground cursor-not-allowed"
-              title="জিপিএস কোড পরিবর্তনযোগ্য নয়"
+              title={dict.schoolForm.gpsLockedNotice}
             />
           </div>
 
@@ -236,21 +238,21 @@ export function SchoolUpdateForm({
           <div className="space-y-1.5">
             <Label className="text-xs font-medium flex items-center gap-1.5">
               <CheckCircle2 className="h-3.5 w-3.5 text-muted-foreground" />
-              অবস্থা (Status) <span className="text-destructive">*</span>
+              {dict.schoolForm.statusLabel} <span className="text-destructive">*</span>
             </Label>
             <Select
               value={selectedStatus}
               onValueChange={(val) => setValue("is_active", val as "true" | "false")}
             >
               <SelectTrigger className="h-9 text-xs">
-                <SelectValue placeholder="অবস্থা নির্বাচন করুন" />
+                <SelectValue placeholder={dict.common.status} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="true" className="text-xs">
-                  🟢 সক্রিয় (Active)
+                  🟢 {dict.common.active}
                 </SelectItem>
                 <SelectItem value="false" className="text-xs">
-                  🟡 নিষ্ক্রিয় (Inactive)
+                  🟡 {dict.common.inactive}
                 </SelectItem>
               </SelectContent>
             </Select>
@@ -261,18 +263,18 @@ export function SchoolUpdateForm({
       {/* ---------------- SECTION 2: BASIC DETAILS ---------------- */}
       <div className="space-y-4">
         <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-          বিদ্যালয়ের মৌলিক তথ্য
+          {dict.schoolForm.section2Title}
         </h4>
 
         {/* School Name */}
         <div className="space-y-1.5">
           <Label htmlFor="school-name" className="text-xs font-medium flex items-center gap-1.5">
             <Building2 className="h-3.5 w-3.5 text-muted-foreground" />
-            বিদ্যালয়ের নাম <span className="text-destructive">*</span>
+            {dict.schoolForm.nameLabel} <span className="text-destructive">*</span>
           </Label>
           <Input
             id="school-name"
-            placeholder="যেমন: মতিঝিল সরকারি প্রাথমিক বিদ্যালয়"
+            placeholder={dict.schoolForm.namePlaceholder}
             {...register("name")}
             className="h-9 text-xs"
           />
@@ -285,14 +287,14 @@ export function SchoolUpdateForm({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-1.5">
             <Label className="text-xs font-medium">
-              বিভাগ (Division) <span className="text-destructive">*</span>
+              {dict.schoolForm.divisionLabel} <span className="text-destructive">*</span>
             </Label>
             <Select
               value={selectedDivision}
               onValueChange={(val) => setValue("division", val)}
             >
               <SelectTrigger className="h-9 text-xs">
-                <SelectValue placeholder="বিভাগ নির্বাচন করুন" />
+                <SelectValue placeholder={dict.schoolForm.divisionLabel} />
               </SelectTrigger>
               <SelectContent>
                 {BANGLADESH_DIVISIONS.map((div) => (
@@ -309,11 +311,11 @@ export function SchoolUpdateForm({
 
           <div className="space-y-1.5">
             <Label htmlFor="school-district" className="text-xs font-medium">
-              জেলা (District) <span className="text-destructive">*</span>
+              {dict.schoolForm.districtLabel} <span className="text-destructive">*</span>
             </Label>
             <Input
               id="school-district"
-              placeholder="যেমন: ঢাকা"
+              placeholder={dict.schoolForm.districtPlaceholder}
               {...register("district")}
               className="h-9 text-xs"
             />
@@ -327,11 +329,11 @@ export function SchoolUpdateForm({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-1.5">
             <Label htmlFor="school-upazila" className="text-xs font-medium">
-              উপজেলা / থানা <span className="text-destructive">*</span>
+              {dict.schoolForm.upazilaLabel} <span className="text-destructive">*</span>
             </Label>
             <Input
               id="school-upazila"
-              placeholder="যেমন: মতিঝিল"
+              placeholder={dict.schoolForm.upazilaPlaceholder}
               {...register("upazila")}
               className="h-9 text-xs"
             />
@@ -342,11 +344,11 @@ export function SchoolUpdateForm({
 
           <div className="space-y-1.5">
             <Label htmlFor="school-cluster" className="text-xs font-medium">
-              ক্লাস্টার <span className="text-destructive">*</span>
+              {dict.schoolForm.clusterLabel} <span className="text-destructive">*</span>
             </Label>
             <Input
               id="school-cluster"
-              placeholder="যেমন: মতিঝিল-১"
+              placeholder={dict.schoolForm.clusterPlaceholder}
               {...register("cluster")}
               className="h-9 text-xs"
             />
@@ -360,11 +362,11 @@ export function SchoolUpdateForm({
         <div className="space-y-1.5">
           <Label htmlFor="school-address" className="text-xs font-medium flex items-center gap-1.5">
             <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
-            ঠিকানা
+            {dict.schoolForm.addressLabel}
           </Label>
           <Input
             id="school-address"
-            placeholder="যেমন: বাড়ি ১২, রোড ৪, মতিঝিল বা/এ"
+            placeholder={dict.schoolForm.addressPlaceholder}
             {...register("address")}
             className="h-9 text-xs"
           />
@@ -374,11 +376,11 @@ export function SchoolUpdateForm({
         <div className="space-y-1.5">
           <Label htmlFor="school-phone" className="text-xs font-medium flex items-center gap-1.5">
             <Phone className="h-3.5 w-3.5 text-muted-foreground" />
-            যোগাযোগের ফোন নম্বর
+            {dict.schoolForm.phoneLabel}
           </Label>
           <Input
             id="school-phone"
-            placeholder="যেমন: 01712345678"
+            placeholder={dict.schoolForm.phonePlaceholder}
             {...register("phone")}
             className="h-9 text-xs"
           />
@@ -401,7 +403,7 @@ export function SchoolUpdateForm({
             disabled={isSubmitting}
             className="h-9 text-xs"
           >
-            বাতিল করুন
+            {dict.schoolForm.cancelBtn}
           </Button>
         )}
         <Button
@@ -413,12 +415,12 @@ export function SchoolUpdateForm({
           {isSubmitting ? (
             <>
               <Loader2 className="h-3.5 w-3.5 animate-spin" />
-              সংরক্ষণ করা হচ্ছে...
+              {dict.schoolForm.savingBtn}
             </>
           ) : (
             <>
               <Save className="h-3.5 w-3.5" />
-              পরিবর্তন সংরক্ষণ করুন
+              {dict.schoolForm.updateBtn}
             </>
           )}
         </Button>

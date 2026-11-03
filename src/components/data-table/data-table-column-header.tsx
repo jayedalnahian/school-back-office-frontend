@@ -21,7 +21,7 @@ import type { RowData } from "@tanstack/react-table";
 import type { DataTableColumn, SortOrder } from "./types";
 
 export interface DataTableColumnHeaderProps<
-  TData extends RowData = any,
+  TData extends RowData = Record<string, unknown>,
   TValue = unknown,
 > extends React.HTMLAttributes<HTMLDivElement> {
   column?: DataTableColumn<TData, TValue>;
@@ -34,7 +34,7 @@ export interface DataTableColumnHeaderProps<
 }
 
 export function DataTableColumnHeader<
-  TData extends RowData = any,
+  TData extends RowData = Record<string, unknown>,
   TValue = unknown,
 >({
   column,

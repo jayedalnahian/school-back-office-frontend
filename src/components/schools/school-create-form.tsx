@@ -37,6 +37,7 @@ import {
 } from "./schools.validators";
 import type { CreatedSchoolResult } from "./schools.types";
 import { onboardSchool, createSchool } from "./schools.service";
+import { useLanguage } from "@/i18n";
 
 export interface SchoolCreateFormProps {
   onSuccess?: (createdSchool: CreatedSchoolResult) => void;
@@ -53,6 +54,7 @@ export function SchoolCreateForm({
   onCancel,
   className,
 }: SchoolCreateFormProps) {
+  const { dict } = useLanguage();
   const queryClient = useQueryClient();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
@@ -121,7 +123,7 @@ export function SchoolCreateForm({
           created_at: new Date().toISOString(),
         };
 
-        toast.success("বিদ্যালয় ও স্কুল অ্যাডমিন অ্যাকাউন্ট সফলভাবে নিবন্ধিত হয়েছে!");
+        toast.success(dict.schools.onboardSuccess);
       } else {
         const payload = {
           name: values.name.trim(),
@@ -144,7 +146,7 @@ export function SchoolCreateForm({
           created_at: new Date().toISOString(),
         };
 
-        toast.success("নতুন বিদ্যালয় সফলভাবে সিস্টেমে যুক্ত হয়েছে!");
+        toast.success(dict.schools.onboardSuccess);
       }
 
       // Invalidate queries to refresh lists
@@ -157,7 +159,7 @@ export function SchoolCreateForm({
       }
     } catch (err: unknown) {
       console.error("Failed to onboard school:", err);
-      let message = "বিদ্যালয় নিবন্ধন করতে ব্যর্থ হয়েছে। অনুগ্রহ করে পুনরায় চেষ্টা করুন।";
+      let message = dict.common.failedToLoad;
       if (err && typeof err === "object" && "response" in err) {
         const axiosErr = err as {
           response?: { data?: { message?: string; error?: string } };
@@ -184,15 +186,15 @@ export function SchoolCreateForm({
             </div>
             <div>
               <h3 className="text-sm sm:text-base font-bold text-foreground">
-                ১. সাধারণ ও প্রাতিষ্ঠানিক তথ্য (Basic School Details)
+                {dict.schoolForm.section1Title}
               </h3>
               <p className="text-xs text-muted-foreground">
-                বিদ্যালয়ের অফিসিয়াল নাম, জিপিএস কোড ও সক্রিয়তা স্থিতি
+                {dict.schoolForm.section1Sub}
               </p>
             </div>
           </div>
           <Badge variant="outline" className="text-[11px] font-normal w-fit bg-muted/30">
-            &quot;*&quot; চিহ্নিত ফিল্ডসমূহ পূরণ বাধ্যতামূলক
+            {dict.common.requiredFieldNotice}
           </Badge>
         </div>
 
@@ -200,11 +202,11 @@ export function SchoolCreateForm({
           {/* School Name */}
           <div className="sm:col-span-2 space-y-1.5">
             <Label htmlFor="name" className="text-xs font-semibold flex items-center gap-1">
-              বিদ্যালয়ের নাম (School Name) <span className="text-destructive">*</span>
+              {dict.schoolForm.nameLabel} <span className="text-destructive">*</span>
             </Label>
             <Input
               id="name"
-              placeholder="যেমন: ধানমন্ডি গভঃ মডেল প্রাইমারি স্কুল"
+              placeholder={dict.schoolForm.namePlaceholder}
               className={`h-9.5 text-xs ${errors.name ? "border-destructive focus-visible:ring-destructive" : ""}`}
               {...register("name")}
             />
@@ -215,7 +217,7 @@ export function SchoolCreateForm({
               </p>
             ) : (
               <p className="text-[11px] text-muted-foreground">
-                অফিসিয়াল গেজেট বা স্বীকৃতিপত্রে উল্লেখিত পূর্ণ নাম লিখুন
+                {dict.schoolForm.nameHelp}
               </p>
             )}
           </div>
@@ -225,15 +227,15 @@ export function SchoolCreateForm({
             <div className="flex items-center justify-between">
               <Label htmlFor="gps_code" className="text-xs font-semibold flex items-center gap-1">
                 <Hash className="h-3.5 w-3.5 text-muted-foreground" />
-                জিপিএস কোড (GPS Code) <span className="text-destructive">*</span>
+                {dict.schoolForm.gpsCodeLabel} <span className="text-destructive">*</span>
               </Label>
               <span className="text-[10px] font-mono text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
-                ৮ ডিজিট
+                8 Digits
               </span>
             </div>
             <Input
               id="gps_code"
-              placeholder="যেমন: 10203040"
+              placeholder={dict.schoolForm.gpsCodePlaceholder}
               maxLength={8}
               className={`h-9.5 text-xs font-mono tracking-wider ${
                 errors.gps_code ? "border-destructive focus-visible:ring-destructive" : ""
@@ -247,7 +249,7 @@ export function SchoolCreateForm({
               </p>
             ) : (
               <p className="text-[11px] text-muted-foreground">
-                শিক্ষা অধিদপ্তর প্রদত্ত অনন্য ৮ ডিজিটের কোড
+                {dict.schoolForm.gpsCodeHelp}
               </p>
             )}
           </div>
@@ -255,21 +257,21 @@ export function SchoolCreateForm({
           {/* Status */}
           <div className="space-y-1.5">
             <Label htmlFor="is_active" className="text-xs font-semibold flex items-center gap-1">
-              প্রাতিষ্ঠানিক অবস্থা (Status) <span className="text-destructive">*</span>
+              {dict.schoolForm.statusLabel} <span className="text-destructive">*</span>
             </Label>
             <Select
               value={selectedStatus}
               onValueChange={(val) => setValue("is_active", val as "true" | "false")}
             >
               <SelectTrigger id="is_active" className="h-9.5 text-xs w-full">
-                <SelectValue placeholder="স্ট্যাটাস নির্বাচন করুন" />
+                <SelectValue placeholder={dict.common.status} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="true" className="text-xs">
-                  🟢 সক্রিয় (Active)
+                  🟢 {dict.common.active}
                 </SelectItem>
                 <SelectItem value="false" className="text-xs">
-                  🟡 সাময়িক নিষ্ক্রিয় (Inactive)
+                  🟡 {dict.common.inactive}
                 </SelectItem>
               </SelectContent>
             </Select>
@@ -285,10 +287,10 @@ export function SchoolCreateForm({
           </div>
           <div>
             <h3 className="text-sm sm:text-base font-bold text-foreground">
-              ২. ভৌগোলিক ও প্রশাসনিক বিন্যাস (Geographical & Administrative Hierarchy)
+              {dict.schoolForm.section2Title}
             </h3>
             <p className="text-xs text-muted-foreground">
-              বিভাগ, জেলা, উপজেলা এবং ক্লাস্টার সংশ্লিষ্ট সঠিক তথ্য
+              {dict.schoolForm.section2Sub}
             </p>
           </div>
         </div>
@@ -297,14 +299,14 @@ export function SchoolCreateForm({
           {/* Division */}
           <div className="space-y-1.5">
             <Label htmlFor="division" className="text-xs font-semibold flex items-center gap-1">
-              বিভাগ (Division) <span className="text-destructive">*</span>
+              {dict.schoolForm.divisionLabel} <span className="text-destructive">*</span>
             </Label>
             <Select
               value={selectedDivision}
               onValueChange={(val) => setValue("division", val)}
             >
               <SelectTrigger id="division" className="h-9.5 text-xs w-full">
-                <SelectValue placeholder="বিভাগ নির্বাচন করুন" />
+                <SelectValue placeholder={dict.schoolForm.divisionLabel} />
               </SelectTrigger>
               <SelectContent>
                 {BANGLADESH_DIVISIONS.map((div) => (
@@ -322,11 +324,11 @@ export function SchoolCreateForm({
           {/* District */}
           <div className="space-y-1.5">
             <Label htmlFor="district" className="text-xs font-semibold flex items-center gap-1">
-              জেলা (District) <span className="text-destructive">*</span>
+              {dict.schoolForm.districtLabel} <span className="text-destructive">*</span>
             </Label>
             <Input
               id="district"
-              placeholder="যেমন: Dhaka, Bogura"
+              placeholder={dict.schoolForm.districtPlaceholder}
               className={`h-9.5 text-xs ${errors.district ? "border-destructive" : ""}`}
               {...register("district")}
             />
@@ -338,11 +340,11 @@ export function SchoolCreateForm({
           {/* Upazila */}
           <div className="space-y-1.5">
             <Label htmlFor="upazila" className="text-xs font-semibold flex items-center gap-1">
-              উপজেলা / থানা (Upazila) <span className="text-destructive">*</span>
+              {dict.schoolForm.upazilaLabel} <span className="text-destructive">*</span>
             </Label>
             <Input
               id="upazila"
-              placeholder="যেমন: Dhanmondi, Sadar"
+              placeholder={dict.schoolForm.upazilaPlaceholder}
               className={`h-9.5 text-xs ${errors.upazila ? "border-destructive" : ""}`}
               {...register("upazila")}
             />
@@ -354,11 +356,11 @@ export function SchoolCreateForm({
           {/* Cluster */}
           <div className="space-y-1.5">
             <Label htmlFor="cluster" className="text-xs font-semibold flex items-center gap-1">
-              ক্লাস্টার (Cluster) <span className="text-destructive">*</span>
+              {dict.schoolForm.clusterLabel} <span className="text-destructive">*</span>
             </Label>
             <Input
               id="cluster"
-              placeholder="যেমন: Cluster-01, Zone-A"
+              placeholder={dict.schoolForm.clusterPlaceholder}
               className={`h-9.5 text-xs ${errors.cluster ? "border-destructive" : ""}`}
               {...register("cluster")}
             />
@@ -377,10 +379,10 @@ export function SchoolCreateForm({
           </div>
           <div>
             <h3 className="text-sm sm:text-base font-bold text-foreground">
-              ৩. যোগাযোগ ও প্রাতিষ্ঠানিক ঠিকানা (Contact & Address Details)
+              {dict.schoolForm.section3Title}
             </h3>
             <p className="text-xs text-muted-foreground">
-              বিদ্যালয়ের অফিসিয়াল যোগাযোগ নম্বর, ইমেইল এবং বিস্তারিত অবস্থান
+              {dict.schoolForm.section3Sub}
             </p>
           </div>
         </div>
@@ -389,11 +391,11 @@ export function SchoolCreateForm({
           {/* Detailed Address */}
           <div className="sm:col-span-2 space-y-1.5">
             <Label htmlFor="address" className="text-xs font-semibold">
-              বিস্তারিত প্রাতিষ্ঠানিক ঠিকানা (Detailed Physical Address)
+              {dict.schoolForm.addressLabel}
             </Label>
             <Input
               id="address"
-              placeholder="যেমন: বাড়ি নং ১২, রোড নং ৫, ধানমন্ডি আ/এ, ঢাকা-১২০৫"
+              placeholder={dict.schoolForm.addressPlaceholder}
               className="h-9.5 text-xs"
               {...register("address")}
             />
@@ -402,12 +404,12 @@ export function SchoolCreateForm({
           {/* School Phone */}
           <div className="space-y-1.5">
             <Label htmlFor="phone" className="text-xs font-semibold flex items-center gap-1">
-              অফিসিয়াল ফোন নম্বর (Helpline / Phone)
+              {dict.schoolForm.phoneLabel}
             </Label>
             <Input
               id="phone"
               type="tel"
-              placeholder="যেমন: 01711223344"
+              placeholder={dict.schoolForm.phonePlaceholder}
               className={`h-9.5 text-xs font-mono ${errors.phone ? "border-destructive" : ""}`}
               {...register("phone")}
             />
@@ -415,7 +417,7 @@ export function SchoolCreateForm({
               <p className="text-[11px] text-destructive">{errors.phone.message}</p>
             ) : (
               <p className="text-[11px] text-muted-foreground">
-                ১১ ডিজিটের সঠিক বাংলাদেশি মোবাইল নম্বর
+                {dict.schoolForm.phoneHelp}
               </p>
             )}
           </div>
@@ -424,12 +426,12 @@ export function SchoolCreateForm({
           <div className="space-y-1.5">
             <Label htmlFor="email" className="text-xs font-semibold flex items-center gap-1">
               <Mail className="h-3.5 w-3.5 text-muted-foreground" />
-              অফিসিয়াল ইমেইল (Official Email)
+              {dict.schoolForm.emailLabel}
             </Label>
             <Input
               id="email"
               type="email"
-              placeholder="যেমন: info@school.edu.bd"
+              placeholder={dict.schoolForm.emailPlaceholder}
               className={`h-9.5 text-xs ${errors.email ? "border-destructive" : ""}`}
               {...register("email")}
             />
@@ -449,10 +451,10 @@ export function SchoolCreateForm({
             </div>
             <div>
               <h3 className="text-sm sm:text-base font-bold text-foreground">
-                ৪. প্রধান প্রশাসক / স্কুল অ্যাডমিন অ্যাকাউন্ট (School Administrator Account)
+                {dict.schoolForm.section4Title}
               </h3>
               <p className="text-xs text-muted-foreground">
-                বিদ্যালয় ব্যবস্থাপনার জন্য প্রথম অ্যাডমিন ব্যবহারকারী তৈরি
+                {dict.schoolForm.section4Sub}
               </p>
             </div>
           </div>
@@ -464,7 +466,7 @@ export function SchoolCreateForm({
               checked={createAdmin}
               onChange={(e) => setValue("createAdmin", e.target.checked)}
             />
-            <span>অ্যাডমিন অ্যাকাউন্ট তৈরি করুন</span>
+            <span>{dict.schoolForm.createAdminCheckbox}</span>
           </label>
         </div>
 
@@ -473,10 +475,7 @@ export function SchoolCreateForm({
             <div className="flex items-start gap-2.5 text-xs text-foreground/90">
               <ShieldCheck className="h-4 w-4 shrink-0 text-indigo-600 dark:text-indigo-400 mt-0.5" />
               <div className="leading-relaxed">
-                <span className="font-semibold text-indigo-700 dark:text-indigo-300">
-                  নিরাপত্তা ও অ্যাক্সেস পলিসি:{" "}
-                </span>
-                অনবোর্ডিং সম্পন্ন হলে উক্ত অ্যাডমিনকে &quot;SCHOOL_ADMIN&quot; পারমিশন প্রদান করা হবে। প্রদত্ত ফোন নম্বরটি সিস্টেমে লগইন ইউজারনেম হিসেবে কার্যকর হবে।
+                {dict.schoolForm.adminSecurityPolicy}
               </div>
             </div>
 
@@ -484,11 +483,11 @@ export function SchoolCreateForm({
               {/* Admin Full Name */}
               <div className="sm:col-span-2 lg:col-span-1 space-y-1.5">
                 <Label htmlFor="admin_full_name" className="text-xs font-semibold flex items-center gap-1">
-                  অ্যাডমিনের পুরো নাম <span className="text-destructive">*</span>
+                  {dict.schoolForm.adminNameLabel} <span className="text-destructive">*</span>
                 </Label>
                 <Input
                   id="admin_full_name"
-                  placeholder="যেমন: ড. মোহাম্মদ রফিকুল ইসলাম"
+                  placeholder={dict.schoolForm.adminNamePlaceholder}
                   className={`h-9.5 text-xs bg-background ${
                     errors.admin_full_name ? "border-destructive focus-visible:ring-destructive" : ""
                   }`}
@@ -505,12 +504,12 @@ export function SchoolCreateForm({
               {/* Admin Phone (Login Username) */}
               <div className="space-y-1.5">
                 <Label htmlFor="admin_phone" className="text-xs font-semibold flex items-center gap-1">
-                  মোবাইল নম্বর (লগইন আইডি) <span className="text-destructive">*</span>
+                  {dict.schoolForm.adminPhoneLabel} <span className="text-destructive">*</span>
                 </Label>
                 <Input
                   id="admin_phone"
                   type="tel"
-                  placeholder="যেমন: 01812345678"
+                  placeholder={dict.schoolForm.adminPhonePlaceholder}
                   className={`h-9.5 text-xs font-mono bg-background ${
                     errors.admin_phone ? "border-destructive focus-visible:ring-destructive" : ""
                   }`}
@@ -523,7 +522,7 @@ export function SchoolCreateForm({
                   </p>
                 ) : (
                   <p className="text-[11px] text-muted-foreground">
-                    সিস্টেমে অনন্য ১১ ডিজিটের সক্রিয় ফোন নম্বর
+                    {dict.schoolForm.adminPhoneHelp}
                   </p>
                 )}
               </div>
@@ -531,12 +530,12 @@ export function SchoolCreateForm({
               {/* Admin Email */}
               <div className="space-y-1.5">
                 <Label htmlFor="admin_email" className="text-xs font-semibold">
-                  অ্যাডমিনের ইমেইল (ঐচ্ছিক)
+                  {dict.schoolForm.adminEmailLabel}
                 </Label>
                 <Input
                   id="admin_email"
                   type="email"
-                  placeholder="যেমন: admin@school.edu.bd"
+                  placeholder={dict.schoolForm.adminEmailPlaceholder}
                   className={`h-9.5 text-xs bg-background ${
                     errors.admin_email ? "border-destructive focus-visible:ring-destructive" : ""
                   }`}
@@ -550,7 +549,7 @@ export function SchoolCreateForm({
           </div>
         ) : (
           <div className="rounded-lg border border-dashed border-border/80 p-4 text-center text-xs text-muted-foreground bg-muted/20">
-            কোনো প্রাথমিক অ্যাডমিন অ্যাকাউন্ট তৈরি করা হচ্ছে না। পরবর্তীতে ইউজার ম্যানেজমেন্ট মডিউল থেকে এই বিদ্যালয়ের অ্যাডমিন নিয়োগ দেওয়া যাবে।
+            {dict.schoolForm.noAdminNotice}
           </div>
         )}
       </div>
@@ -566,7 +565,7 @@ export function SchoolCreateForm({
               onClick={onCancel}
               className="h-9 text-xs w-full sm:w-auto"
             >
-              বাতিল করুন
+              {dict.schoolForm.cancelBtn}
             </Button>
           )}
           <Button
@@ -578,7 +577,7 @@ export function SchoolCreateForm({
             className="h-9 text-xs text-muted-foreground hover:text-foreground w-full sm:w-auto"
           >
             <RotateCcw className="h-3.5 w-3.5 mr-1.5" />
-            ফর্ম রিসেট
+            {dict.schoolForm.resetBtn}
           </Button>
         </div>
 
@@ -591,12 +590,12 @@ export function SchoolCreateForm({
           {isSubmitting ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin" />
-              <span>নিবন্ধন সংরক্ষণ করা হচ্ছে...</span>
+              <span>{dict.schoolForm.savingBtn}</span>
             </>
           ) : (
             <>
               <CheckCircle2 className="h-4 w-4" />
-              <span>বিদ্যালয় নিবন্ধন সম্পন্ন করুন</span>
+              <span>{dict.schoolForm.submitOnboardBtn}</span>
             </>
           )}
         </Button>

@@ -4,59 +4,54 @@ import * as React from "react";
 import { UserRound, Users, Award } from "lucide-react";
 import { ModulePageView } from "@/components/layouts/module-view";
 import { Badge } from "@/components/ui/badge";
+import { useLanguage } from "@/i18n";
 
 export default function StudentsPage() {
+  const { dict, language } = useLanguage();
+  const m = dict.modules.students;
+
   return (
     <ModulePageView
-      title="শিক্ষার্থীবৃন্দ ও তথ্যভাণ্ডার"
-      englishTitle="Students Directory"
-      description="বিদ্যালয়ে অধ্যয়নরত সকল শিক্ষার্থীর ইউনিক প্রোফাইল, অভিভাবক ও রোল নম্বর"
+      title={m.title}
+      englishTitle={language === "bn" ? "Students Directory" : undefined}
+      description={m.subtitle}
       icon={UserRound}
-      badge="স্টেকহোল্ডার"
-      actionText="নতুন শিক্ষার্থী যুক্ত করুন"
+      badge={m.badge}
+      actionText={m.action}
       stats={[
-        { label: "মোট শিক্ষার্থী", value: "৭২০ জন", icon: Users },
-        { label: "ছাত্র সংখ্যা", value: "৩৫০ জন", icon: UserRound },
-        { label: "ছাত্রী সংখ্যা", value: "৩৭০ জন", change: "৫১.৪% নারী শিক্ষা" },
-        { label: "উপবৃত্তি সুবিধাভোগী", value: "৫৪০ জন", icon: Award },
+        { label: m.stat1, value: language === "bn" ? "৭২০ জন" : "720 Students", icon: Users },
+        { label: m.stat2, value: language === "bn" ? "৩৫০ জন" : "350 Boys", icon: UserRound },
+        { label: m.stat3, value: language === "bn" ? "৩৭০ জন" : "370 Girls", change: language === "bn" ? "৫১.৪% নারী শিক্ষা" : "51.4% Female Education" },
+        { label: m.stat4, value: language === "bn" ? "৫৪০ জন" : "540 Stipend", icon: Award },
       ]}
-      columns={["রোল", "শিক্ষার্থীর নাম", "শ্রেণি ও শাখা", "জন্ম নিবন্ধন নম্বর", "অভিভাবকের নাম ও মোবাইল", "অবস্থা"]}
+      columns={[m.col1, m.col2, m.col3, m.col4, m.col5, m.col6]}
       data={[
         [
-          <span key="1" className="font-mono font-bold">০১</span>,
-          <span key="name" className="font-semibold text-foreground">আহসান হাবীব</span>,
-          "পঞ্চম শ্রেণি (সুরমা)",
+          <span key="1" className="font-mono font-bold">01</span>,
+          <span key="name" className="font-semibold text-foreground">{language === "bn" ? "আহসান হাবীব" : "Ahsan Habib"}</span>,
+          language === "bn" ? "পঞ্চম শ্রেণি (সুরমা)" : "Class 5 (Surma)",
           "20152692518001234",
-          "মোঃ আনোয়ার হোসেন (01711223344)",
-          <Badge key="status" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">🟢 নিয়মিত</Badge>,
+          language === "bn" ? "মোঃ আনোয়ার হোসেন (01711223344)" : "Md. Anwar Hossain (01711223344)",
+          <Badge key="status" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">🟢 {language === "bn" ? "নিয়মিত" : "Regular"}</Badge>,
         ],
         [
-          <span key="2" className="font-mono font-bold">০২</span>,
-          <span key="name" className="font-semibold text-foreground">ফাতিমা তুজ জোহরা</span>,
-          "পঞ্চম শ্রেণি (সুরমা)",
+          <span key="2" className="font-mono font-bold">02</span>,
+          <span key="name" className="font-semibold text-foreground">{language === "bn" ? "ফাতিমা তুজ জোহরা" : "Fatima Tuz Zohra"}</span>,
+          language === "bn" ? "পঞ্চম শ্রেণি (সুরমা)" : "Class 5 (Surma)",
           "20152692518001235",
-          "মোঃ আব্দুল করিম (01811223344)",
-          <Badge key="status" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">🟢 নিয়মিত</Badge>,
+          language === "bn" ? "মোঃ আব্দুল করিম (01811223344)" : "Md. Abdul Karim (01811223344)",
+          <Badge key="status" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">🟢 {language === "bn" ? "নিয়মিত" : "Regular"}</Badge>,
         ],
         [
-          <span key="3" className="font-mono font-bold">০১</span>,
-          <span key="name" className="font-semibold text-foreground">তানভীর আহমেদ</span>,
-          "প্রথম শ্রেণি (পদ্মা)",
+          <span key="3" className="font-mono font-bold">01</span>,
+          <span key="name" className="font-semibold text-foreground">{language === "bn" ? "তানভীর আহমেদ" : "Tanvir Ahmed"}</span>,
+          language === "bn" ? "প্রথম শ্রেণি (পদ্মা)" : "Class 1 (Padma)",
           "20192692518005678",
-          "মোঃ মোস্তফা কামাল (01911223344)",
-          <Badge key="status" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">🟢 নিয়মিত</Badge>,
-        ],
-        [
-          <span key="4" className="font-mono font-bold">০২</span>,
-          <span key="name" className="font-semibold text-foreground">নুসরাত জাহান</span>,
-          "প্রথম শ্রেণি (পদ্মা)",
-          "20192692518005679",
-          "মোঃ রফিকুল হক (01611223344)",
-          <Badge key="status" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">🟢 নিয়মিত</Badge>,
+          language === "bn" ? "মোঃ মোস্তফা কামাল (01911223344)" : "Md. Mostafa Kamal (01911223344)",
+          <Badge key="status" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">🟢 {language === "bn" ? "নিয়মিত" : "Regular"}</Badge>,
         ],
       ]}
-      searchPlaceholder="শিক্ষার্থীর নাম, রোল বা জন্ম নিবন্ধন নম্বর দিয়ে খুঁজুন..."
-      notice="প্রত্যেক শিক্ষার্থীর ১৭ ডিজিটের ডিজিটাল জন্ম নিবন্ধন নম্বর এবং উপবৃত্তির জন্য মায়ের সচল নগদ/বিকাশ অ্যাকাউন্ট নিশ্চিত করতে হবে।"
+      notice={m.notice}
     />
   );
 }

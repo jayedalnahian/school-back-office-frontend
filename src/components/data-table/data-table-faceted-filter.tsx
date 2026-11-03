@@ -21,11 +21,12 @@ import {
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 import type { DataTableColumn, FilterOption } from "./types";
+import { useLanguage } from "@/i18n";
 
 export interface DataTableFacetedFilterProps {
   title?: string;
   options: FilterOption[];
-  column?: DataTableColumn<any, any>;
+  column?: DataTableColumn<Record<string, unknown>, unknown>;
   selectedValues?: string[] | Set<string>;
   onSelect?: (values: string[]) => void;
   singleSelect?: boolean;
@@ -39,6 +40,8 @@ export function DataTableFacetedFilter({
   onSelect,
   singleSelect = false,
 }: DataTableFacetedFilterProps) {
+  const { dict, formatNumber, language } = useLanguage();
+
   // Support both direct controlled values and TanStack column filter state
   const columnFilterValue = column?.getFilterValue();
 
@@ -113,7 +116,7 @@ export function DataTableFacetedFilter({
                 variant="secondary"
                 className="rounded-sm px-1.5 py-0 font-normal lg:hidden"
               >
-                {selectedSet.size}
+                {formatNumber(selectedSet.size)}
               </Badge>
               <div className="hidden gap-1 lg:flex">
                 {selectedSet.size > 2 ? (
@@ -121,7 +124,7 @@ export function DataTableFacetedFilter({
                     variant="secondary"
                     className="rounded-sm px-1.5 py-0 font-normal"
                   >
-                    {selectedSet.size}টি নির্বাচিত
+                    {formatNumber(selectedSet.size)} {language === "bn" ? "টি নির্বাচিত" : "selected"}
                   </Badge>
                 ) : (
                   options
@@ -145,7 +148,7 @@ export function DataTableFacetedFilter({
         <Command>
           <CommandInput placeholder={title} />
           <CommandList>
-            <CommandEmpty>কোনো ফলাফল পাওয়া যায়নি।</CommandEmpty>
+            <CommandEmpty>{dict.common.noRecordsFound}</CommandEmpty>
             <CommandGroup>
               {options.map((option) => {
                 const isSelected = selectedSet.has(option.value);
@@ -173,7 +176,7 @@ export function DataTableFacetedFilter({
                     <span className="truncate">{option.label}</span>
                     {option.count !== undefined && (
                       <span className="ml-auto flex h-4 w-4 items-center justify-center font-mono text-xs text-muted-foreground">
-                        {option.count}
+                        {formatNumber(option.count)}
                       </span>
                     )}
                   </CommandItem>
@@ -188,7 +191,7 @@ export function DataTableFacetedFilter({
                     onSelect={handleClearFilters}
                     className="justify-center text-center font-medium text-destructive cursor-pointer text-xs"
                   >
-                    ফিল্টার মুছে ফেলুন (Clear filters)
+                    {dict.common.resetFilters}
                   </CommandItem>
                 </CommandGroup>
               </>

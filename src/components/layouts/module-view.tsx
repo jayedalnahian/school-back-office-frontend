@@ -17,6 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/i18n";
 
 export interface StatItem {
   label: string;
@@ -52,18 +53,22 @@ export function ModulePageView({
   englishTitle,
   description,
   icon: Icon,
-  badge = "মডিউল",
+  badge,
   actionText,
   onActionClick,
   stats,
   columns,
   data,
-  searchPlaceholder = "অনুসন্ধান করুন...",
+  searchPlaceholder,
   notice,
 }: ModulePageViewProps) {
   const router = useRouter();
+  const { dict, language, formatNumber } = useLanguage();
   const [searchTerm, setSearchTerm] = React.useState("");
   const [isRefreshing, setIsRefreshing] = React.useState(false);
+
+  const effectiveBadge = badge || (language === "bn" ? "মডিউল" : "Module");
+  const effectivePlaceholder = searchPlaceholder || dict.common.searchPlaceholder;
 
   const handleBack = React.useCallback(() => {
     if (typeof window !== "undefined" && window.history.length > 1) {
@@ -83,7 +88,7 @@ export function ModulePageView({
     setIsRefreshing(true);
     setTimeout(() => {
       setIsRefreshing(false);
-      toast.success("তথ্য সফলভাবে রিলোড করা হয়েছে");
+      toast.success(dict.schools.reloadSuccess);
     }, 600);
   };
 
@@ -103,7 +108,7 @@ export function ModulePageView({
   return (
     <div className="w-full min-w-0 space-y-6">
       {/* ---------------- 1. Top Navigation & Official Header ---------------- */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-border/80 pb-3 mb-3 -mt-5">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-border/80 pb-3 mb-3">
         <div className="flex items-center gap-3">
           {/* Browser Navigation (Back / Forward) Buttons */}
           <div className="flex items-center gap-1 rounded-lg border border-border/70 bg-card/60 p-0.5 shadow-2xs">
@@ -113,7 +118,7 @@ export function ModulePageView({
               size="icon"
               onClick={handleBack}
               className="h-8 w-8 rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
-              title="পূর্ববর্তী পৃষ্ঠায় ফিরে যান (Back)"
+              title={dict.common.back}
               aria-label="Back"
             >
               <ArrowLeft className="h-4 w-4" />
@@ -124,7 +129,7 @@ export function ModulePageView({
               size="icon"
               onClick={handleForward}
               className="h-8 w-8 rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
-              title="পরবর্তী পৃষ্ঠায় এগিয়ে যান (Forward)"
+              title={dict.common.forward}
               aria-label="Forward"
             >
               <ArrowRight className="h-4 w-4" />
@@ -145,7 +150,7 @@ export function ModulePageView({
                 </span>
               )}
               <Badge variant="outline" className="hidden sm:inline-flex text-[11px] font-medium bg-muted/40">
-                {badge}
+                {effectiveBadge}
               </Badge>
             </div>
             <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
@@ -163,17 +168,17 @@ export function ModulePageView({
             onClick={handleRefresh}
             disabled={isRefreshing}
             className="h-9 gap-1.5 text-xs font-medium border-border/80 shadow-2xs"
-            title="ডাটা রিলোড করুন"
+            title={dict.common.reload}
           >
             <RefreshCw className={cn("h-3.5 w-3.5", isRefreshing && "animate-spin text-primary")} />
-            <span className="hidden sm:inline">রিলোড</span>
+            <span className="hidden sm:inline">{dict.common.reload}</span>
           </Button>
 
           {actionText && (
             <Button
               type="button"
               size="sm"
-              onClick={onActionClick || (() => toast.info(`"${actionText}" প্রক্রিয়া শুরু করা হয়েছে`))}
+              onClick={onActionClick || (() => toast.info(`${actionText}`))}
               className="h-9 gap-1.5 text-xs font-semibold shadow-xs bg-primary hover:bg-primary/90 text-primary-foreground"
             >
               <Plus className="h-4 w-4" />
@@ -203,7 +208,7 @@ export function ModulePageView({
                 </div>
                 <div className="flex items-baseline justify-between">
                   <span className="text-xl sm:text-2xl font-bold text-foreground font-mono">
-                    {stat.value}
+                    {typeof stat.value === "number" ? formatNumber(stat.value) : stat.value}
                   </span>
                   {stat.change && (
                     <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">
@@ -222,7 +227,7 @@ export function ModulePageView({
         <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 flex items-start gap-3 text-xs leading-relaxed text-foreground/90">
           <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
           <div>
-            <span className="font-semibold text-primary">প্রাতিষ্ঠানিক নির্দেশনা: </span>
+            <span className="font-semibold text-primary">{dict.common.institutionalGuideline}: </span>
             {notice}
           </div>
         </div>
@@ -237,7 +242,7 @@ export function ModulePageView({
             <Input
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder={searchPlaceholder}
+              placeholder={effectivePlaceholder}
               className="h-8.5 pl-8 text-xs bg-background"
             />
           </div>
@@ -246,20 +251,20 @@ export function ModulePageView({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => toast.info("ফিল্টারিং প্যানেল শীঘ্রই যুক্ত হবে")}
+              onClick={() => toast.info(dict.common.filter)}
               className="h-8.5 gap-1.5 text-xs text-muted-foreground hover:text-foreground"
             >
               <SlidersHorizontal className="h-3.5 w-3.5" />
-              <span>ফিল্টার</span>
+              <span>{dict.common.filter}</span>
             </Button>
             <Button
               variant="outline"
               size="sm"
-              onClick={() => toast.success("ডাটা এক্সপোর্ট প্রস্তুত করা হচ্ছে...")}
+              onClick={() => toast.success(dict.common.export)}
               className="h-8.5 gap-1.5 text-xs text-muted-foreground hover:text-foreground"
             >
               <Download className="h-3.5 w-3.5" />
-              <span>এক্সপোর্ট</span>
+              <span>{dict.common.export}</span>
             </Button>
           </div>
         </div>
@@ -274,7 +279,7 @@ export function ModulePageView({
                     {col}
                   </th>
                 ))}
-                <th className="py-3 px-4 text-right whitespace-nowrap">অ্যাকশন</th>
+                <th className="py-3 px-4 text-right whitespace-nowrap">{dict.common.actions}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border/60">
@@ -293,10 +298,10 @@ export function ModulePageView({
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => toast.info("বিস্তারিত ভিউ প্রস্তুত করা হচ্ছে")}
+                        onClick={() => toast.info(`${dict.common.details}`)}
                         className="h-7 text-[11px] px-2 text-primary hover:text-primary/90 hover:bg-primary/10"
                       >
-                        বিস্তারিত
+                        {dict.common.details}
                       </Button>
                     </td>
                   </tr>
@@ -304,7 +309,7 @@ export function ModulePageView({
               ) : (
                 <tr>
                   <td colSpan={columns.length + 1} className="py-12 text-center text-muted-foreground">
-                    কোনো তথ্য খুঁজে পাওয়া যায়নি
+                    {dict.common.noRecordsFound}
                   </td>
                 </tr>
               )}
@@ -315,9 +320,17 @@ export function ModulePageView({
         {/* Table Footer */}
         <div className="flex items-center justify-between p-3.5 border-t border-border/70 bg-muted/20 text-xs text-muted-foreground">
           <span>
-            সর্বমোট <strong className="text-foreground">{filteredData.length}</strong> টি রেকর্ড প্রদর্শিত হচ্ছে
+            {language === "bn" ? (
+              <>
+                সর্বমোট <strong className="text-foreground">{formatNumber(filteredData.length)}</strong> টি রেকর্ড প্রদর্শিত হচ্ছে
+              </>
+            ) : (
+              <>
+                Showing <strong className="text-foreground">{formatNumber(filteredData.length)}</strong> total records
+              </>
+            )}
           </span>
-          <span className="text-[11px]">প্রাথমিক বিদ্যালয় ব্যাক-অফিস সিস্টেম</span>
+          <span className="text-[11px]">{dict.common.appTitle}</span>
         </div>
       </div>
     </div>

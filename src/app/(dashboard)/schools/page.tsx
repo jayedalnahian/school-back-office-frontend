@@ -10,15 +10,17 @@ import { DataTable } from "@/components/data-table";
 import { Button } from "@/components/ui/button";
 import {
   SchoolEditDialog,
-  schoolFilterConfigs,
+  getSchoolFilterConfigs,
   useSchoolsTable,
 } from "@/components/schools";
+import { useLanguage } from "@/i18n";
 
 /**
  * Schools Management Table Component
  * Connects table UI to modular business logic and state management.
  */
 function SchoolsTableContent() {
+  const { dict } = useLanguage();
   const {
     data,
     meta,
@@ -62,10 +64,12 @@ function SchoolsTableContent() {
     }
   }, [router]);
 
+  const filterConfigs = React.useMemo(() => getSchoolFilterConfigs(dict), [dict]);
+
   return (
     <div className="w-full min-w-0">
       {/* Page Header */}
-      <div className="flex flex-col -mt-5 gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-border/80 pb-3 mb-3">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-border/80 pb-3 mb-3">
         <div className="flex items-center gap-3">
           {/* Browser Navigation (Back / Forward) Buttons */}
           <div className="flex items-center gap-1 rounded-lg border border-border/70 bg-card/60 p-0.5 shadow-2xs">
@@ -75,7 +79,7 @@ function SchoolsTableContent() {
               size="icon"
               onClick={handleBack}
               className="h-8 w-8 rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
-              title="পূর্ববর্তী পৃষ্ঠায় ফিরে যান (Back)"
+              title={dict.common.back}
               aria-label="Back"
             >
               <ArrowLeft className="h-4 w-4" />
@@ -86,7 +90,7 @@ function SchoolsTableContent() {
               size="icon"
               onClick={handleForward}
               className="h-8 w-8 rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
-              title="পরবর্তী পৃষ্ঠায় এগিয়ে যান (Forward)"
+              title={dict.common.forward}
               aria-label="Forward"
             >
               <ArrowRight className="h-4 w-4" />
@@ -94,16 +98,11 @@ function SchoolsTableContent() {
           </div>
 
           <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-xl sm:text-2xl font-bold text-foreground font-sans">
-                বিদ্যালয় অনবোর্ডিং ও তালিকা
-              </h1>
-              <span className="hidden sm:inline-flex items-center rounded-md border border-border bg-muted/40 px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
-                মডিউল
-              </span>
-            </div>
+            <h1 className="text-xl sm:text-2xl font-bold text-foreground font-sans tracking-normal">
+              {dict.schools.pageTitle}
+            </h1>
             <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
-
+              {dict.schools.pageSubtitle}
             </p>
           </div>
         </div>
@@ -116,7 +115,7 @@ function SchoolsTableContent() {
           >
             <Link href="/schools/onboard">
               <Plus className="h-4 w-4" />
-              নতুন বিদ্যালয় যুক্ত করুন
+              {dict.schools.addNewSchool}
             </Link>
           </Button>
         </div>
@@ -139,7 +138,7 @@ function SchoolsTableContent() {
             onClick={handleReload}
             disabled={isFetching}
             className="h-8 gap-1.5 text-xs"
-            title="ডাটা রিলোড করুন"
+            title={dict.common.reload}
           >
             <RefreshCw className={cn("h-3.5 w-3.5", isFetching && "animate-spin text-primary")} />
           </Button>
@@ -153,15 +152,15 @@ function SchoolsTableContent() {
         sortOrder={sortOrder}
         onSortChange={setSorting}
         search={searchTerm}
-        searchPlaceholder="নাম, কোড, ঠিকানা বা ইমেইল দিয়ে খুঁজুন..."
+        searchPlaceholder={dict.schools.searchPlaceholder}
         onSearchChange={setSearchTerm}
-        filterConfigs={schoolFilterConfigs}
+        filterConfigs={filterConfigs}
         filters={filters}
         onFilterChange={setFilter}
         onResetFilters={resetFilters}
-        emptyTitle="কোনো বিদ্যালয় পাওয়া যায়নি"
-        emptyDescription="আপনার ফিল্টার বা সার্চ কিওয়ার্ডের সাথে মেলে এমন কোনো বিদ্যালয় তথ্য ডাটাবেজে নেই।"
-        onRowClick={(row) => toast.info(`নির্বাচিত বিদ্যালয়: ${row.name}`)}
+        emptyTitle={dict.schools.emptyTitle}
+        emptyDescription={dict.schools.emptyDescription}
+        onRowClick={(row) => toast.info(`${dict.schools.nameCol}: ${row.name}`)}
       />
 
       {/* School Edit Dialog */}
@@ -175,15 +174,13 @@ function SchoolsTableContent() {
   );
 }
 
-/**
- * Root page component wrapped with Suspense boundary for nuqs search params
- */
 export default function SchoolsPage() {
   return (
     <React.Suspense
       fallback={
-        <div className="flex h-64 items-center justify-center text-sm text-muted-foreground">
-          বিদ্যালয়ের তথ্য লোড করা হচ্ছে...
+        <div className="w-full space-y-4 animate-pulse py-4">
+          <div className="h-10 w-48 bg-muted rounded-md" />
+          <div className="h-72 w-full bg-muted/40 rounded-xl border border-border" />
         </div>
       }
     >

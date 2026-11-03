@@ -8,27 +8,37 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
-
-const chartData = [
-  { day: "রবিবার", present: 815, absent: 25 },
-  { day: "সোমবার", present: 828, absent: 12 },
-  { day: "মঙ্গলবার", present: 795, absent: 45 },
-  { day: "বুধবার", present: 832, absent: 8 },
-  { day: "বৃহস্পতিবার", present: 810, absent: 30 },
-];
-
-const chartConfig = {
-  present: {
-    label: "উপস্থিত",
-    color: "var(--chart-1)",
-  },
-  absent: {
-    label: "অনুপস্থিত",
-    color: "var(--chart-2)",
-  },
-} satisfies ChartConfig;
+import { useLanguage } from "@/i18n";
 
 export function AttendanceChart() {
+  const { dict } = useLanguage();
+
+  const chartData = React.useMemo(
+    () => [
+      { day: dict.dashboard.daySun, present: 815, absent: 25 },
+      { day: dict.dashboard.dayMon, present: 828, absent: 12 },
+      { day: dict.dashboard.dayTue, present: 795, absent: 45 },
+      { day: dict.dashboard.dayWed, present: 832, absent: 8 },
+      { day: dict.dashboard.dayThu, present: 810, absent: 30 },
+    ],
+    [dict]
+  );
+
+  const chartConfig = React.useMemo(
+    () =>
+      ({
+        present: {
+          label: dict.dashboard.presentLabel,
+          color: "var(--chart-1)",
+        },
+        absent: {
+          label: dict.dashboard.absentLabel,
+          color: "var(--chart-2)",
+        },
+      } satisfies ChartConfig),
+    [dict]
+  );
+
   return (
     <div className="w-full max-w-full min-w-0 space-y-3">
       <ChartContainer
@@ -62,11 +72,11 @@ export function AttendanceChart() {
       <div className="flex items-center justify-center gap-6 pt-2 border-t border-border/50 text-xs text-muted-foreground">
         <div className="flex items-center gap-2">
           <span className="h-2.5 w-2.5 rounded-full bg-[var(--chart-1)]" />
-          <span className="font-medium text-foreground">উপস্থিত (গড় ৮১৮ জন)</span>
+          <span className="font-medium text-foreground">{dict.dashboard.presentAverage}</span>
         </div>
         <div className="flex items-center gap-2">
           <span className="h-2.5 w-2.5 rounded-full bg-[var(--chart-2)]" />
-          <span className="font-medium text-foreground">অনুপস্থিত (গড় ২৪ জন)</span>
+          <span className="font-medium text-foreground">{dict.dashboard.absentAverage}</span>
         </div>
       </div>
     </div>

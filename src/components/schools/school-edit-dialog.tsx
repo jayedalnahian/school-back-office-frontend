@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import type { SchoolUpdateFormData } from "./schools.types";
 import { SchoolUpdateForm } from "./school-update-form";
+import { useLanguage } from "@/i18n";
 
 export interface SchoolEditDialogProps {
   schoolId: string | null;
@@ -26,6 +27,8 @@ export function SchoolEditDialog({
   onOpenChange,
   onSuccess,
 }: SchoolEditDialogProps) {
+  const { dict } = useLanguage();
+
   const handleSuccess = (updatedSchool: SchoolUpdateFormData) => {
     onSuccess?.(updatedSchool);
     onOpenChange(false);
@@ -50,9 +53,11 @@ export function SchoolEditDialog({
               <Building2 className="h-5 w-5" />
             </div>
             <div>
-              <DialogTitle className="text-xl font-bold">বিদ্যালয়ের তথ্য সম্পাদনা</DialogTitle>
+              <DialogTitle className="text-xl font-bold">
+                {dict.schools.editSchoolTitle}
+              </DialogTitle>
               <DialogDescription className="text-xs">
-                বিদ্যমান বিদ্যালয়ের তথ্য হালনাগাদ করুন। জিপিএস কোড অপরিবর্তনীয়।
+                {dict.schools.editSchoolSubtitle}
               </DialogDescription>
             </div>
           </div>
